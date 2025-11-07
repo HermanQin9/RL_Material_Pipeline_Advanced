@@ -1,17 +1,16 @@
 # methods/data_methods.py
 """
-数据处理方法模块 / Data Processing Methods Module
+ / Data Processing Methods Module
 
 This module contains all data processing methods for the ML pipeline including
 data fetching, feature matrix construction, imputation, feature selection, and scaling.
-本模块包含机器学习流水线的所有数据处理方法，包括数据获取、特征矩阵构建、缺失值填充、特征选择和数据缩放。
 
 Main functions:
-- fetch_and_featurize: 获取并特征化数据 / Fetch and featurize data
-- feature_matrix: 构建特征矩阵 / Construct feature matrix  
-- impute_data: 缺失值填充 / Missing data imputation
-- feature_selection: 特征选择 / Feature selection
-- scale_features: 特征缩放 / Feature scaling
+- fetch_and_featurize:  / Fetch and featurize data
+- feature_matrix:  / Construct feature matrix  
+- impute_data:  / Missing data imputation
+- feature_selection:  / Feature selection
+- scale_features:  / Feature scaling
 """
 from __future__ import annotations
 import logging
@@ -27,7 +26,7 @@ import pandas as pd
 from joblib import Parallel, delayed
 from tqdm import tqdm
 
-# 延迟导入可选的重型依赖 / Lazy imports for optional heavy dependencies
+#  / Lazy imports for optional heavy dependencies
 try:
     from mp_api.client import MPRester  # type: ignore
 except Exception:  # pragma: no cover
@@ -44,7 +43,7 @@ from sklearn.feature_selection import VarianceThreshold, SelectKBest, f_regressi
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
 
-# 可选的GNN依赖 / Optional GNN dependencies
+# GNN / Optional GNN dependencies
 try:
     import torch
     import torch.nn as nn
@@ -68,7 +67,7 @@ except ImportError:
 
 from config import API_KEY, CACHE_FILE, PROC_DIR, BATCH_SIZE, N_TOTAL, TARGET_PROP, MODEL_DIR
 
-# 初始化 Logger
+#  Logger
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -92,7 +91,7 @@ __all__ = [
     "variance_selection",
     "univariate_selection",
     "pca_selection",
-    # N4: GNN Processing (新增)
+    # N4: GNN Processing ()
     "gnn_process",
     "structure_to_graph",
     "extract_gnn_features",
@@ -135,7 +134,7 @@ PROC_PATH = Path(PROC_DIR)
 
 # Change to the public function
 def split_by_fe(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """按是否含 Fe 将数据切分为 train/test (robust to types)."""
+    """ Fe  train/test (robust to types)."""
     if "composition" not in df.columns:
         # Fallback: random split
         split = int(0.8 * len(df))
@@ -163,33 +162,32 @@ def split_by_fe(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         return df.iloc[:split].reset_index(drop=True), df.iloc[split:].reset_index(drop=True)
     return train_df, test_df
 
-
 def safe_featurize(feat_obj, x):
-    """安全的特征化函数，处理可能的错误"""
+    """"""
     if x is None:
         return [np.nan] * len(feat_obj.feature_labels())
     try:
         return feat_obj.featurize(x)
     except (TypeError, ValueError, AttributeError) as e:
-        # 当遇到 NoneType 错误或其他特征化错误时，返回 NaN
+        #  NoneType  NaN
         logger.warning(f"Featurization failed for {type(feat_obj).__name__}: {str(e)[:100]}")
         return [np.nan] * len(feat_obj.feature_labels())
 
 def apply_featurizers(df: pd.DataFrame) -> pd.DataFrame:
-    """对 DataFrame 批量应用 featurizers 并拼接结果"""
+    """ DataFrame  featurizers """
     parts: list[pd.DataFrame] = [df]
     for feat_obj, col in FEATURE_METHODS:
         labels = feat_obj.feature_labels()
         logger.info(f"Applying {type(feat_obj).__name__} to column '{col}' ({len(df)} samples)")
-        # 使用安全的特征化函数
+        # 
         array = Parallel(n_jobs=-1)(delayed(safe_featurize)(feat_obj, v) for v in df[col])
         parts.append(pd.DataFrame(array, columns=labels)) # type: ignore
         logger.info(f"  Generated {len(labels)} features")
     return pd.concat(parts, axis=1)
 
-# Node 0: 获取数据、特征化并划分训练/测试集
+# Node 0: /
 def fetch_and_featurize(_: Any = None, cache: bool = True) -> Dict[str, Any]:
-    """N0: 获取数据、特征化并划分训练/测试集"""
+    """N0: /"""
     logger.info("N0 start: cache=%s", cache)
 
     full_df = fetch_data(cache=cache)
@@ -206,7 +204,7 @@ def fetch_and_featurize(_: Any = None, cache: bool = True) -> Dict[str, Any]:
     }
 
 def get_value(d, key, default=None):
-    # 支持 dict、对象（如 dataclass 或一般有属性的对象）
+    #  dict dataclass 
     if isinstance(d, dict):
         return d.get(key, default)
     elif hasattr(d, key):
@@ -294,7 +292,7 @@ def fetch_data(cache: bool = True) -> pd.DataFrame:
 
     full_df = pd.concat(dfs, ignore_index=True)[:N_TOTAL]
 
-    # 缓存
+    # 
     CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(CACHE_PATH, "wb") as f:
         pickle.dump(full_df, f)
@@ -325,8 +323,6 @@ def split_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         raise RuntimeError("Train/Test split resulted in empty dataframe!")
     return train_df, test_df
 
-
-
 # N1: Impution Node
 # Incase of the missinf values, we will use the imputer to fill them.
 
@@ -345,14 +341,14 @@ def drop_allnan(df):
     return df.dropna(axis=1, how='all') if isinstance(df, pd.DataFrame) else df
 
 def apply_imputer(imp, data):
-    """For（X_train, X_val, X_test）use the same imputer，format in dict"""
+    """ForX_train, X_val, X_testuse the same imputerformat in dict"""
     import logging
     logger = logging.getLogger(__name__)
     X_train = imp.fit_transform(drop_allnan(data['X_train']))
     X_val   = imp.transform(drop_allnan(data['X_val']))
     X_test_raw = data.get('X_test')
     X_test  = imp.transform(drop_allnan(X_test_raw)) if X_test_raw is not None else None
-    # 检查并修复NaN
+    # NaN
     def fix_nan(arr, name):
         if isinstance(arr, np.ndarray) and np.isnan(arr).any():
             logger.warning(f"[impute_data] {name} contains NaN after impute, auto-filling with 0.")
@@ -434,9 +430,7 @@ def impute_none(data, **params):
         'y_test': data.get('y_test')
     }
 
-
-
-# N2: Feature Matrix Node 需要设置verbose开关
+# N2: Feature Matrix Node verbose
 def select_feature_columns(df, nan_thresh=0.5):
     exclude = ['material_id', 'structure', 'elements', 'formula_pretty', 'composition', TARGET_PROP]
     return [
@@ -479,7 +473,7 @@ def feature_matrix(data, nan_thresh=0.5, train_val_ratio=0.8, verbose=True):
         print("[DEBUG] X_train head:\n", X_train.head())
         print("[DEBUG] X_val head:\n", X_val.head())
 
-    # 检查并修复NaN
+    # NaN
     import logging
     logger = logging.getLogger(__name__)
     def fix_nan(arr, name):
@@ -505,12 +499,11 @@ def feature_matrix(data, nan_thresh=0.5, train_val_ratio=0.8, verbose=True):
         'y_test': y_test
     }
 
-
 # Node 3: Feature selection | Node 3: Feature selection
 
 def feature_selection(data, strategy='none', params=None):
     """
-    特征选择入口函数。
+    
     Feature selection entry function.
     """
     strategies = {
@@ -525,16 +518,16 @@ def feature_selection(data, strategy='none', params=None):
 
 def apply_selector(selector, data, y_required=False):
     """
-    用于 N3/N4：统一作用于 train/val/test，适配 selector/scaler。
+     N3/N4 train/val/test selector/scaler
     Apply sklearn selector/scaler/transformer to train/val/test sets.
 
     Args:
-        selector: 拟合对象 (selector/scaler/transformer)
-        data: 输入数据 dict
-        y_required: 是否强制传 y（比如特征选择）
+        selector:  (selector/scaler/transformer)
+        data:  dict
+        y_required:  y
 
     Returns:
-        X_train, X_val, X_test: 各 split 处理后矩阵
+        X_train, X_val, X_test:  split 
     """
     if y_required and data.get('y_train') is not None:
         X_train = selector.fit_transform(data['X_train'], data['y_train'])
@@ -546,12 +539,12 @@ def apply_selector(selector, data, y_required=False):
 
 def filter_feature_names(data, selector, prefix=''):
     """
-    根据支持向量或主成分自动生成新的特征名。
+    
     Auto-generate new feature names according to support mask or PCA components.
     """
     if hasattr(selector, 'get_support') and 'feature_names' in data:
         mask = selector.get_support()
-        # 显式转换为布尔值，避免 pandas Series 的歧义错误
+        #  pandas Series 
         # Explicitly convert to bool to avoid pandas Series ambiguity error
         return [fname for fname, m in zip(data['feature_names'], mask) if bool(m)]
     elif prefix:
@@ -562,7 +555,7 @@ def filter_feature_names(data, selector, prefix=''):
 
 def no_selection(data, **params):
     """
-    不进行任何特征选择，直接返回。
+    
     No feature selection, just return the original features.
     """
     return {
@@ -575,7 +568,7 @@ def no_selection(data, **params):
 
 def variance_selection(data, var_ratio=0.01, **params):
     """
-    方差阈值特征选择。
+    
     Feature selection by variance threshold.
     """
     if np.isnan(data['X_train']).any():
@@ -593,10 +586,10 @@ def variance_selection(data, var_ratio=0.01, **params):
         'selector': selector, 'feature_names': new_feature_names
     }
 
-# 有监督学习，需要用到y | Supervised learning, requires the use of y
+# y | veryvised learning, requires the use of y
 def univariate_selection(data, k=20, **params):
     """
-    单变量特征选择 (F检验, 相关性评分)。
+     (F, )
     Univariate feature selection (F-regression, correlation scores).
     """
     if np.isnan(data['X_train']).any():
@@ -611,7 +604,7 @@ def univariate_selection(data, k=20, **params):
     else:
         k_val = k
     selector = SelectKBest(score_func=f_regression, k=min(k_val, X_tr_arr.shape[1]))
-    # 统一通过 apply_selector 调用，并指定 y_required=True
+    #  apply_selector  y_required=True
     X_train, X_val, X_test = apply_selector(
         selector,
         {
@@ -620,7 +613,7 @@ def univariate_selection(data, k=20, **params):
             'X_test': np.array(data['X_test']) if data.get('X_test') is not None else None,
             'y_train': y_tr
         },
-        y_required=True  # 关键！select_univariate 必须传 y
+        y_required=True  # select_univariate  y
     )
     new_feature_names = filter_feature_names(data, selector)
     return {
@@ -631,7 +624,7 @@ def univariate_selection(data, k=20, **params):
 
 def pca_selection(data, n_components=0.95, **params):
     """
-    主成分分析 (PCA) 特征降维。
+     (PCA) 
     Principal component analysis (PCA) for feature reduction.
     """
     if np.isnan(data['X_train']).any():
@@ -661,12 +654,12 @@ def pca_selection(data, n_components=0.95, **params):
 
 # Node 4 : Feature Scaling
 
-# 全局唯一 apply_selector 已在此文件定义
+#  apply_selector 
 # def apply_selector(selector, data, y_required=False): ...
 
 def scale_features(data, strategy='standard', params=None):
     """
-    特征缩放/标准化统一入口。
+    /
     Unified scaling interface for pipeline.
     """
     strategies = {
@@ -681,7 +674,7 @@ def scale_features(data, strategy='standard', params=None):
 
 def scale_standard(data, **params):
     """
-    标准化（StandardScaler）
+    StandardScaler
     Standardization (StandardScaler)
     """
     scaler = StandardScaler()
@@ -699,7 +692,7 @@ def scale_standard(data, **params):
 
 def scale_robust(data, **params):
     """
-    稳健缩放（RobustScaler）
+    RobustScaler
     Robust scaling (RobustScaler)
     """
     X_train, X_val, X_test = apply_selector(RobustScaler(), data)
@@ -716,7 +709,7 @@ def scale_robust(data, **params):
 
 def scale_minmax(data, **params):
     """
-    MinMax标准化（MinMaxScaler）
+    MinMaxMinMaxScaler
     Min-Max scaling (MinMaxScaler)
     """
     X_train, X_val, X_test = apply_selector(MinMaxScaler(), data)
@@ -733,7 +726,7 @@ def scale_minmax(data, **params):
 
 def scale_none(data, **params):
     """
-    不进行缩放。
+    
     No scaling (identity transform)
     """
     return {
@@ -745,39 +738,38 @@ def scale_none(data, **params):
         'y_test': data.get('y_test')
     }
 
-
-# ========================= N4: 图神经网络处理 / GNN Processing for N4 Node =========================
-# 本部分实现了从晶体结构中提取深度学习特征的完整GNN管道
+# ========================= N4:  / GNN Processing for N4 Node =========================
+# GNN
 # This section implements a complete GNN pipeline for extracting deep learning features from crystal structures
 
-# ========================= N4: 图神经网络处理 / GNN Processing for N4 Node =========================
-# 本部分实现了从晶体结构中提取深度学习特征的完整GNN管道
+# ========================= N4:  / GNN Processing for N4 Node =========================
+# GNN
 # This section implements a complete GNN pipeline for extracting deep learning features from crystal structures
 
-# 定义GNN模型类（仅在PyTorch可用时）/ Define GNN model classes (only if PyTorch available)
+# GNNPyTorch/ Define GNN model classes (only if PyTorch available)
 if TORCH_AVAILABLE:
     class SimpleGCN(nn.Module):
         """
-        简化的图卷积网络(GCN) / Simplified Graph Convolutional Network
+        (GCN) / Simplified Graph Convolutional Network
         
-        使用2层GCN进行图特征学习，输出全局平均池化的图级表示。
+        2GCN
         Uses 2-layer GCN for graph feature learning, outputs global mean-pooled graph-level representation.
         
         Architecture:
-        - Layer 1: GCNConv(input_dim → hidden_dim) + BatchNorm + ReLU + Dropout
-        - Layer 2: GCNConv(hidden_dim → output_dim) + BatchNorm + ReLU
+        - Layer 1: GCNConv(input_dim  ->  hidden_dim) + BatchNorm + ReLU + Dropout
+        - Layer 2: GCNConv(hidden_dim  ->  output_dim) + BatchNorm + ReLU
         - Pooling: Global mean pooling for graph-level representation
         """
         def __init__(self, input_dim: int, hidden_dim: int = 32, output_dim: int = 16):
             """
-            初始化GCN模型 / Initialize GCN model
+            GCN / Initialize GCN model
             
             Args:
-                input_dim: 输入特征维度 / Input feature dimension (typically 3 for atomic features)
-                hidden_dim: 隐层维度 / Hidden layer dimension (default 32)
-                output_dim: 输出特征维度 / Output feature dimension (default 16)
+                input_dim:  / Input feature dimension (typically 3 for atomic features)
+                hidden_dim:  / Hidden layer dimension (default 32)
+                output_dim:  / Output feature dimension (default 16)
             """
-            super().__init__()
+            very().__init__()
             self.conv1 = GCNConv(input_dim, hidden_dim)
             self.conv2 = GCNConv(hidden_dim, output_dim)
             self.bn1 = nn.BatchNorm1d(hidden_dim)
@@ -785,111 +777,109 @@ if TORCH_AVAILABLE:
             
         def forward(self, data):
             """
-            前向传播 / Forward pass
+             / Forward pass
             
             Args:
-                data: torch_geometric.data.Data 对象，包含:
-                    - x: [n_nodes, input_dim] 节点特征 / Node features
-                    - edge_index: [2, n_edges] 边索引 / Edge indices
-                    - batch: [n_nodes] 批处理指示 / Batch assignment for pooling
+                data: torch_geometric.data.Data :
+                    - x: [n_nodes, input_dim]  / Node features
+                    - edge_index: [2, n_edges]  / Edge indices
+                    - batch: [n_nodes]  / Batch assignment for pooling
             
             Returns:
-                graph_embedding: [batch_size, output_dim] 图级表示 / Graph-level representation
+                graph_embedding: [batch_size, output_dim]  / Graph-level representation
             """
             x, edge_index, batch = data.x, data.edge_index, data.batch
             
-            # 第一层卷积 / First convolution layer
+            #  / First convolution layer
             x = self.conv1(x, edge_index)
             x = self.bn1(x)
             x = F.relu(x)
             x = F.dropout(x, p=0.1, training=self.training)
             
-            # 第二层卷积 / Second convolution layer
+            #  / Second convolution layer
             x = self.conv2(x, edge_index)
             x = self.bn2(x)
             x = F.relu(x)
             
-            # 全局平均池化 / Global average pooling
+            #  / Global average pooling
             graph_embedding = global_mean_pool(x, batch)
             return graph_embedding
 
-
     class SimpleGAT(nn.Module):
         """
-        简化的图注意力网络(GAT) / Simplified Graph Attention Network
+        (GAT) / Simplified Graph Attention Network
         
-        使用多头注意力机制学习原子间的重要性权重，能够捕捉复杂的原子间相互作用。
+        
         Uses multi-head attention mechanism to learn atomic importance weights, capturing complex atomic interactions.
         
         Architecture:
-        - Layer 1: GATConv(input_dim → hidden_dim, heads=4) + BatchNorm + ReLU + Dropout
-        - Layer 2: GATConv(hidden_dim → output_dim, heads=1) + ReLU
+        - Layer 1: GATConv(input_dim  ->  hidden_dim, heads=4) + BatchNorm + ReLU + Dropout
+        - Layer 2: GATConv(hidden_dim  ->  output_dim, heads=1) + ReLU
         - Attention: Multi-head self-attention for feature interaction learning
         """
         def __init__(self, input_dim: int, hidden_dim: int = 32, output_dim: int = 16, heads: int = 4):
             """
-            初始化GAT模型 / Initialize GAT model
+            GAT / Initialize GAT model
             
             Args:
-                input_dim: 输入特征维度 / Input feature dimension
-                hidden_dim: 隐层维度 / Hidden layer dimension
-                output_dim: 输出特征维度 / Output feature dimension
-                heads: 注意力头数 / Number of attention heads (default 4)
+                input_dim:  / Input feature dimension
+                hidden_dim:  / Hidden layer dimension
+                output_dim:  / Output feature dimension
+                heads:  / Number of attention heads (default 4)
             """
-            super().__init__()
+            very().__init__()
             self.att1 = GATConv(input_dim, hidden_dim // heads, heads=heads, dropout=0.1)
             self.att2 = GATConv(hidden_dim, output_dim, heads=1, dropout=0.1)
             self.bn1 = nn.BatchNorm1d(hidden_dim)
             
         def forward(self, data):
             """
-            前向传播 / Forward pass
+             / Forward pass
             
             Args:
-                data: torch_geometric.data.Data 对象 / PyG Data object
+                data: torch_geometric.data.Data  / PyG Data object
             
             Returns:
-                graph_embedding: [batch_size, output_dim] 图级表示 / Graph-level representation
+                graph_embedding: [batch_size, output_dim]  / Graph-level representation
             """
             x, edge_index, batch = data.x, data.edge_index, data.batch
             
-            # 多头注意力第一层 / First multi-head attention layer
+            #  / First multi-head attention layer
             x = self.att1(x, edge_index)
             x = self.bn1(x)
             x = F.relu(x)
             x = F.dropout(x, p=0.1, training=self.training)
             
-            # 单头注意力第二层 / Second single-head attention layer
+            #  / Second single-head attention layer
             x = self.att2(x, edge_index)
             x = F.relu(x)
             
-            # 全局平均池化 / Global average pooling
+            #  / Global average pooling
             graph_embedding = global_mean_pool(x, batch)
             return graph_embedding
 
-
     class SimpleGraphSAGE(nn.Module):
         """
-        简化的GraphSAGE / Simplified GraphSAGE
+        GraphSAGE / Simplified GraphSAGE
         
-        使用邻域采样和聚合进行可扩展的图学习，特别适合大规模晶体结构处理。
+        
         Uses neighborhood sampling and aggregation for scalable graph learning, especially suitable for large-scale crystal structures.
         
         Architecture:
-        - Layer 1: SAGEConv(input_dim → hidden_dim) + BatchNorm + ReLU + Dropout
-        - Layer 2: SAGEConv(hidden_dim → output_dim) + BatchNorm + ReLU
+        - Layer 1: SAGEConv(input_dim  ->  hidden_dim) + BatchNorm + ReLU + Dropout
+        - Layer 2: SAGEConv(hidden_dim  ->  output_dim) + BatchNorm + ReLU
         - Aggregation: Mean aggregation of neighbor features
         """
         def __init__(self, input_dim: int, hidden_dim: int = 32, output_dim: int = 16):
             """
-            初始化GraphSAGE模型 / Initialize GraphSAGE model
+            GraphSAGE / Initialize GraphSAGE model
             
             Args:
-                input_dim: 输入特征维度 / Input feature dimension
-                hidden_dim: 隐层维度 / Hidden layer dimension
-                output_dim: 输出特征维度 / Output feature dimension
+                input_dim:  / Input feature dimension
+                hidden_dim:  / Hidden layer dimension
+                output_dim:  / Output feature dimension
             """
-            super().__init__()
+            very().__init__()
             self.sage1 = SAGEConv(input_dim, hidden_dim)
             self.sage2 = SAGEConv(hidden_dim, output_dim)
             self.bn1 = nn.BatchNorm1d(hidden_dim)
@@ -897,33 +887,33 @@ if TORCH_AVAILABLE:
             
         def forward(self, data):
             """
-            前向传播 / Forward pass
+             / Forward pass
             
             Args:
-                data: torch_geometric.data.Data 对象 / PyG Data object
+                data: torch_geometric.data.Data  / PyG Data object
             
             Returns:
-                graph_embedding: [batch_size, output_dim] 图级表示 / Graph-level representation
+                graph_embedding: [batch_size, output_dim]  / Graph-level representation
             """
             x, edge_index, batch = data.x, data.edge_index, data.batch
             
-            # 第一层邻域聚合 / First neighborhood aggregation layer
+            #  / First neighborhood aggregation layer
             x = self.sage1(x, edge_index)
             x = self.bn1(x)
             x = F.relu(x)
             x = F.dropout(x, p=0.1, training=self.training)
             
-            # 第二层邻域聚合 / Second neighborhood aggregation layer
+            #  / Second neighborhood aggregation layer
             x = self.sage2(x, edge_index)
             x = self.bn2(x)
             x = F.relu(x)
             
-            # 全局平均池化 / Global average pooling
+            #  / Global average pooling
             graph_embedding = global_mean_pool(x, batch)
             return graph_embedding
 
 else:
-    # PyTorch不可用时的虚拟类 / Dummy classes when PyTorch unavailable
+    # PyTorch / Dummy classes when PyTorch unavailable
     class SimpleGCN:
         """GCN placeholder when PyTorch unavailable"""
         pass
@@ -936,30 +926,29 @@ else:
         """GraphSAGE placeholder when PyTorch unavailable"""
         pass
 
-
 def structure_to_graph(structure: Any, cutoff_distance: float = 5.0) -> Dict[str, Any]:
     """
-    将晶体结构转换为图表示 / Convert crystal structure to graph representation
+     / Convert crystal structure to graph representation
     
-    从晶体结构构建节点（原子）和边（原子对间的相互作用），
-    每个原子是一个节点，其特征为原子属性（原子序数、半径等）。
     
-    构建晶体图的步骤:
-    1. 提取原子位置和属性 / Extract atom positions and properties
-    2. 构建节点特征 [原子序数, 原子半径, 电负性] / Build node features
-    3. 根据截断距离计算原子间的边 / Compute edges based on cutoff distance
+    
+    
+    :
+    1.  / Extract atom positions and properties
+    2.  [, , ] / Build node features
+    3.  / Compute edges based on cutoff distance
     
     Args:
-        structure: pymatgen Structure 对象或字典表示 / pymatgen Structure object or dict
-        cutoff_distance: 邻近原子的截断距离(Å) / Cutoff distance in Angstrom (default 5.0)
+        structure: pymatgen Structure  / pymatgen Structure object or dict
+        cutoff_distance: (Å) / Cutoff distance in Angstrom (default 5.0)
     
     Returns:
-        dict: 包含以下键的图数据 / Graph data dict containing:
-            - node_features: [n_nodes, 3] 原子特征矩阵 / Atomic feature matrix
-            - edge_index: [2, n_edges] 边的源和目标索引 / Edge source and target indices
-            - edge_attr: [n_edges, 2] 边的属性（距离） / Edge attributes (distance)
-            - atomic_numbers: [n_nodes] 原子序数列表 / Atomic number list
-            - n_nodes: 节点数量 / Number of nodes
+        dict:  / Graph data dict containing:
+            - node_features: [n_nodes, 3]  / Atomic feature matrix
+            - edge_index: [2, n_edges]  / Edge source and target indices
+            - edge_attr: [n_edges, 2]  / Edge attributes (distance)
+            - atomic_numbers: [n_nodes]  / Atomic number list
+            - n_nodes:  / Number of nodes
     
     Example:
         >>> structure = pymatgen_structure_object
@@ -971,7 +960,7 @@ def structure_to_graph(structure: Any, cutoff_distance: float = 5.0) -> Dict[str
         return _fallback_graph_construction()
     
     try:
-        # 提取原子位置和属性 / Extract atom positions and properties
+        #  / Extract atom positions and properties
         sites = structure.sites if hasattr(structure, 'sites') else structure.get('sites', [])
         if not sites:
             logger.warning("No sites found in structure.")
@@ -979,56 +968,56 @@ def structure_to_graph(structure: Any, cutoff_distance: float = 5.0) -> Dict[str
         
         n_nodes = len(sites)
         
-        # 1. 构建节点特征 / Build node features
-        # 特征包含: 原子序数(归一化), 原子半径(归一化), 电负性(归一化)
+        # 1.  / Build node features
+        # : (), (), ()
         node_features = []
         atomic_numbers = []
         
         for site in sites:
             try:
-                # 提取元素信息 / Extract element information
+                #  / Extract element information
                 element = site.species[0] if hasattr(site, 'species') else site.get('element')
                 elem = Element(element) if isinstance(element, str) else element
                 atomic_num = elem.Z
                 atomic_numbers.append(atomic_num)
                 
-                # 节点特征: [原子序数/118, 原子半径, 电负性] 
-                # 都归一化到[0,1]范围，便于神经网络处理
+                # : [/118, , ] 
+                # [0,1]
                 features = [
-                    float(atomic_num) / 118.0,  # 原子序数归一化 / Normalized atomic number
-                    (elem.atomic_radius / 200.0) if elem.atomic_radius else 0.5,  # 原子半径 / Atomic radius
-                    (elem.X / 4.0) if elem.X else 0.5,  # 电负性 / Electronegativity
+                    float(atomic_num) / 118.0,  #  / Normalized atomic number
+                    (elem.atomic_radius / 200.0) if elem.atomic_radius else 0.5,  #  / Atomic radius
+                    (elem.X / 4.0) if elem.X else 0.5,  #  / Electronegativity
                 ]
                 node_features.append(features)
             except Exception as e:
                 logger.warning(f"Failed to extract element properties for site: {e}")
-                # 使用默认特征 / Use default features
+                #  / Use default features
                 node_features.append([0.5, 0.5, 0.5])
                 atomic_numbers.append(0)
         
         node_features = np.array(node_features, dtype=np.float32)
         atomic_numbers = np.array(atomic_numbers, dtype=np.int32)
         
-        # 2. 构建边 / Build edges
-        # 根据截断距离筛选相邻原子对
+        # 2.  / Build edges
+        # 
         edge_list = []
         edge_attrs = []
         
         for i in range(n_nodes):
             for j in range(i + 1, n_nodes):
                 try:
-                    # 计算原子间距离 / Calculate distance between atoms
+                    #  / Calculate distance between atoms
                     site_i = sites[i]
                     site_j = sites[j]
                     distance = site_i.distance(site_j)
                     
-                    # 如果距离小于截断距离，添加边 / Add edge if within cutoff
+                    #  / Add edge if within cutoff
                     if distance < cutoff_distance:
-                        # 创建双向边（无向图） / Create bidirectional edges
+                        #  / Create bidirectional edges
                         edge_list.append([i, j])
                         edge_list.append([j, i])
                         
-                        # 边属性: [归一化距离, 常数1]
+                        # : [, 1]
                         edge_attr = [distance / cutoff_distance, 1.0]
                         edge_attrs.append(edge_attr)
                         edge_attrs.append(edge_attr)
@@ -1036,12 +1025,12 @@ def structure_to_graph(structure: Any, cutoff_distance: float = 5.0) -> Dict[str
                     logger.debug(f"Error calculating distance between atoms {i} and {j}: {e}")
                     continue
         
-        # 处理边的情况 / Handle edge cases
+        #  / Handle edge cases
         if edge_list:
             edge_index = np.array(edge_list, dtype=np.int64).T
             edge_attr = np.array(edge_attrs, dtype=np.float32)
         else:
-            # 如果没有边，创建自环（每个原子自己连接自己）
+            # 
             logger.info(f"No edges found with cutoff={cutoff_distance}. Creating self-loops.")
             edge_index = np.array([[i, i] for i in range(n_nodes)], dtype=np.int64).T
             edge_attr = np.ones((n_nodes, 2), dtype=np.float32)
@@ -1058,13 +1047,12 @@ def structure_to_graph(structure: Any, cutoff_distance: float = 5.0) -> Dict[str
         logger.warning(f"Structure to graph conversion failed: {e}. Using fallback.")
         return _fallback_graph_construction()
 
-
 def _fallback_graph_construction() -> Dict[str, Any]:
     """
-    备用图构建函数 / Fallback graph construction
+     / Fallback graph construction
     
-    当pymatgen不可用或结构转换失败时，返回默认的图数据结构。
-    当GNN不可用时将使用统计特征代替。
+    pymatgen
+    GNN
     """
     return {
         'node_features': np.array([[0.5, 0.5, 0.5]], dtype=np.float32),
@@ -1074,7 +1062,6 @@ def _fallback_graph_construction() -> Dict[str, Any]:
         'n_nodes': 1
     }
 
-
 def extract_gnn_features(
     structures: List[Any],
     method: str = 'gcn',
@@ -1082,27 +1069,27 @@ def extract_gnn_features(
     device: str = 'cpu'
 ) -> np.ndarray:
     """
-    使用GNN从晶体结构提取深度学习特征 / Extract deep learning features from crystal structures using GNN
+    GNN / Extract deep learning features from crystal structures using GNN
     
-    处理流程:
-    1. 将晶体结构转换为图表示 / Convert structures to graphs
-    2. 初始化选定的GNN模型 / Initialize selected GNN model
-    3. 执行前向传播并提取图级表示 / Perform forward pass and extract graph-level representations
-    4. 返回特征矩阵 / Return feature matrix
+    :
+    1.  / Convert structures to graphs
+    2. GNN / Initialize selected GNN model
+    3.  / Perform forward pass and extract graph-level representations
+    4.  / Return feature matrix
     
-    支持的GNN方法:
-    - 'gcn': 图卷积网络，快速且稳定，推荐用于大规模数据集
-    - 'gat': 图注意力网络，准确性高但计算量大，推荐用于关键任务
-    - 'sage': GraphSAGE，可扩展性强，推荐用于非常大的结构集
+    GNN:
+    - 'gcn': 
+    - 'gat': 
+    - 'sage': GraphSAGE
     
     Args:
-        structures: 晶体结构列表 / List of crystal structures
-        method: GNN方法 ('gcn', 'gat', 'sage') / GNN method
-        output_dim: 输出特征维度 / Output feature dimension (8, 16, or 32)
-        device: 计算设备 ('cpu' 或 'cuda') / Computing device
+        structures:  / List of crystal structures
+        method: GNN ('gcn', 'gat', 'sage') / GNN method
+        output_dim:  / Output feature dimension (8, 16, or 32)
+        device:  ('cpu'  'cuda') / Computing device
     
     Returns:
-        features: [n_structures, output_dim] GNN特征矩阵 / GNN feature matrix
+        features: [n_structures, output_dim] GNN / GNN feature matrix
     
     Example:
         >>> structures = [struct1, struct2, struct3]
@@ -1114,7 +1101,7 @@ def extract_gnn_features(
         return _statistical_fallback_features(structures, output_dim)
     
     try:
-        # 初始化GNN模型 / Initialize GNN model
+        # GNN / Initialize GNN model
         logger.info(f"Initializing GNN model: {method}, output_dim={output_dim}, device={device}")
         
         if method.lower() == 'gcn':
@@ -1127,9 +1114,9 @@ def extract_gnn_features(
             raise ValueError(f"Unknown GNN method: {method}. Choose from ['gcn', 'gat', 'sage']")
         
         model = model.to(device)
-        model.eval()  # 设置评估模式（无dropout和batch norm统计更新）
+        model.eval()  # dropoutbatch norm
         
-        # 转换结构为图 / Convert structures to graphs
+        #  / Convert structures to graphs
         logger.info(f"Converting {len(structures)} structures to graphs...")
         graphs = []
         for i, structure in enumerate(structures):
@@ -1140,25 +1127,25 @@ def extract_gnn_features(
                 logger.warning(f"Failed to convert structure {i} to graph: {e}")
                 graphs.append(_fallback_graph_construction())
         
-        # 创建PyG数据对象并提取特征 / Create PyG data objects and extract features
+        # PyG / Create PyG data objects and extract features
         logger.info(f"Extracting GNN features from {len(graphs)} graphs...")
         features = []
         
         with torch.no_grad():
             for i, graph_dict in enumerate(graphs):
                 try:
-                    # 转换为torch张量 / Convert to torch tensors
+                    # torch / Convert to torch tensors
                     node_feat = torch.FloatTensor(graph_dict['node_features']).to(device)
                     edge_idx = torch.LongTensor(graph_dict['edge_index']).to(device)
                     
-                    # 创建PyG Data对象 / Create PyG Data object
+                    # PyG Data / Create PyG Data object
                     data = Data(
                         x=node_feat,
                         edge_index=edge_idx,
                         batch=torch.zeros(graph_dict['n_nodes'], dtype=torch.long).to(device)
                     )
                     
-                    # 执行前向传播 / Forward pass
+                    #  / Forward pass
                     embedding = model(data)
                     features.append(embedding.cpu().numpy())
                     
@@ -1177,27 +1164,26 @@ def extract_gnn_features(
         logger.error(f"GNN feature extraction failed: {e}. Using fallback statistical features.")
         return _statistical_fallback_features(structures, output_dim)
 
-
 def _statistical_fallback_features(structures: List[Any], output_dim: int) -> np.ndarray:
     """
-    统计特征备用方案 / Statistical feature fallback
+     / Statistical feature fallback
     
-    当GNN不可用时，使用简单的结构统计特征作为代替。
-    特征包括: 原子数量、周期性特征等。
+    GNN
+    : 
     
     Args:
-        structures: 晶体结构列表 / List of crystal structures
-        output_dim: 输出特征维度 / Output feature dimension
+        structures:  / List of crystal structures
+        output_dim:  / Output feature dimension
     
     Returns:
-        features: [n_structures, output_dim] 统计特征矩阵 / Statistical feature matrix
+        features: [n_structures, output_dim]  / Statistical feature matrix
     """
     logger.info(f"Using statistical fallback features with output_dim={output_dim}")
     features = []
     
     for i, structure in enumerate(structures):
         try:
-            # 计算结构的基本统计特征 / Compute basic structural statistics
+            #  / Compute basic structural statistics
             if hasattr(structure, 'sites'):
                 n_atoms = len(structure.sites)
             elif isinstance(structure, dict):
@@ -1205,20 +1191,19 @@ def _statistical_fallback_features(structures: List[Any], output_dim: int) -> np
             else:
                 n_atoms = 1
             
-            # 创建统计特征向量 / Create statistical feature vector
-            feat = np.random.randn(output_dim) * 0.01 + 0.5  # 初始化接近0.5
-            feat[0] = np.log(n_atoms + 1) / 4.0  # 原子数量特征（对数） / Log of atom count
+            #  / Create statistical feature vector
+            feat = np.random.randn(output_dim) * 0.01 + 0.5  # 0.5
+            feat[0] = np.log(n_atoms + 1) / 4.0  #  / Log of atom count
             if output_dim > 1:
-                feat[1] = np.sin(n_atoms) * 0.5 + 0.5  # 周期性特征 / Periodic feature
+                feat[1] = np.sin(n_atoms) * 0.5 + 0.5  #  / Periodic feature
             
             features.append(feat)
         except Exception as e:
             logger.warning(f"Error computing statistics for structure {i}: {e}")
-            # 使用默认特征 / Use default features
+            #  / Use default features
             features.append(np.ones(output_dim, dtype=np.float32) * 0.5)
     
     return np.array(features, dtype=np.float32)
-
 
 def gnn_process(
     data: Dict[str, Any],
@@ -1228,64 +1213,64 @@ def gnn_process(
     **kwargs
 ) -> Dict[str, Any]:
     """
-    N4节点：图神经网络特征提取 / N4 Node: Graph Neural Network Feature Extraction
+    N4 / N4 Node: Graph Neural Network Feature Extraction
     
-    核心功能:
-    使用GNN从晶体结构中提取深度学习特征，并将这些特征添加到特征矩阵中。
-    这些GNN特征捕捉了晶体的拓扑和几何特性，通常能够显著改进模型性能。
+    :
+    GNN
+    GNN
     
-    处理流程:
-    1. 参数处理：超参数映射 [0.0-1.0] → [8/16/32]维
-    2. 晶体图构建：结构 → 图表示
-    3. GNN特征提取：使用选定的GNN架构
-    4. 特征融合：GNN特征 + 原特征 → 扩展特征
+    :
+    1.  [0.0-1.0]  ->  [8/16/32]
+    2.   ->  
+    3. GNNGNN
+    4. GNN +   ->  
     
-    超参数映射:
-    - param ∈ [0.0, 0.33) → output_dim = 8 (轻量级)
-    - param ∈ [0.33, 0.67) → output_dim = 16 (标准)
-    - param ∈ [0.67, 1.0] → output_dim = 32 (重量级)
+    :
+    - param ∈ [0.0, 0.33)  ->  output_dim = 8 ()
+    - param ∈ [0.33, 0.67)  ->  output_dim = 16 ()
+    - param ∈ [0.67, 1.0]  ->  output_dim = 32 ()
     
-    支持的策略:
-    - 'gcn': Graph Convolutional Network (快速, 推荐)
-    - 'gat': Graph Attention Network (高准确, 昂贵)
-    - 'sage': GraphSAGE (可扩展)
+    :
+    - 'gcn': Graph Convolutional Network (, )
+    - 'gat': Graph Attention Network (, )
+    - 'sage': GraphSAGE ()
     
     Args:
-        data: 流水线状态字典 / Pipeline state dict, must contain:
-            - X_train: [n_train, n_features] 训练特征矩阵
-            - X_val: [n_val, n_features] 验证特征矩阵
-            - X_test: [n_test, n_features] 测试特征矩阵 (可选)
-            - y_train, y_val, y_test: 标签 / Labels
-            - feature_names: 特征名称列表 / Feature name list
-            - structures_train: 训练集晶体结构 / Training structures
-            - structures_val: 验证集晶体结构 / Validation structures
-            - structures_test: 测试集晶体结构 / Test structures (可选)
+        data:  / Pipeline state dict, must contain:
+            - X_train: [n_train, n_features] 
+            - X_val: [n_val, n_features] 
+            - X_test: [n_test, n_features]  ()
+            - y_train, y_val, y_test:  / Labels
+            - feature_names:  / Feature name list
+            - structures_train:  / Training structures
+            - structures_val:  / Validation structures
+            - structures_test:  / Test structures ()
         
-        strategy: GNN方法 ('gcn', 'gat', 'sage') / GNN method
+        strategy: GNN ('gcn', 'gat', 'sage') / GNN method
         
-        param: 超参数 [0.0-1.0]，控制输出维度 / Hyperparameter controlling output dim
-            - 0.0-0.33: 小维度(8)
-            - 0.33-0.67: 中等维度(16)
-            - 0.67-1.0: 大维度(32)
+        param:  [0.0-1.0] / Hyperparameter controlling output dim
+            - 0.0-0.33: (8)
+            - 0.33-0.67: (16)
+            - 0.67-1.0: (32)
         
-        params: 可选的参数字典 / Optional parameter dict
-            - output_dim: 显式指定输出维度 / Explicit output dimension
-            - device: 计算设备 / Computing device ('cpu' or 'cuda')
+        params:  / Optional parameter dict
+            - output_dim:  / Explicit output dimension
+            - device:  / Computing device ('cpu' or 'cuda')
     
     Returns:
-        dict: 更新后的流水线状态，包含:
-            - X_train, X_val, X_test: 扩展的特征矩阵 / Extended feature matrices
-            - y_train, y_val, y_test: 标签 / Labels (unchanged)
-            - feature_names: 更新的特征名称列表 / Updated feature names
-            - gnn_features_train: 原始GNN特征 / Raw GNN features
-            - gnn_features_val, gnn_features_test: 其他集合的GNN特征
-            - gnn_info: GNN处理的元信息 / Metadata about GNN processing
+        dict: :
+            - X_train, X_val, X_test:  / Extended feature matrices
+            - y_train, y_val, y_test:  / Labels (unchanged)
+            - feature_names:  / Updated feature names
+            - gnn_features_train: GNN / Raw GNN features
+            - gnn_features_val, gnn_features_test: GNN
+            - gnn_info: GNN / Metadata about GNN processing
     
     Example:
         >>> result = gnn_process(
         ...     data,
         ...     strategy='gat',
-        ...     param=0.65  # 输出16维特征
+        ...     param=0.65  # 16
         ... )
         >>> X_train_extended = result['X_train']
         >>> print(X_train_extended.shape)  # (n_train, n_original_features + 16)
@@ -1296,13 +1281,13 @@ def gnn_process(
         - GraphSAGE: ~40ms per sample, fastest option
         - Fallback (no PyTorch): <1ms per sample, but lower quality features
     """
-    logger.info(f"🚀 Starting GNN processing: strategy={strategy}, param={param}")
+    logger.info(f" Starting GNN processing: strategy={strategy}, param={param}")
     
-    # 1. 参数处理 / Parameter handling
+    # 1.  / Parameter handling
     if params is None:
         params = {}
     
-    # 确定输出维度 / Determine output dimension from normalized parameter
+    #  / Determine output dimension from normalized parameter
     if param is not None:
         param = max(0.0, min(1.0, float(param)))
         if param < 0.33:
@@ -1316,7 +1301,7 @@ def gnn_process(
     
     logger.info(f"GNN output dimension: {output_dim}")
     
-    # 2. 检查必要的数据 / Check required data
+    # 2.  / Check required data
     X_train = data.get('X_train')
     X_val = data.get('X_val')
     X_test = data.get('X_test')
@@ -1324,22 +1309,22 @@ def gnn_process(
     structures_val = data.get('structures_val', [])
     structures_test = data.get('structures_test', [])
     
-    # 备用方案：如果没有结构数据，使用统计特征 / Fallback if no structure data
+    #  / Fallback if no structure data
     if (not structures_train or len(structures_train) == 0) and X_train is not None:
-        logger.warning("⚠️ No structure data available. Using statistical fallback features.")
+        logger.warning(" No structure data available. Using statistical fallback features.")
         return _gnn_fallback(data, output_dim)
     
-    # 3. 提取GNN特征 / Extract GNN features
+    # 3. GNN / Extract GNN features
     try:
-        # 确定设备 / Determine device
+        #  / Determine device
         if TORCH_AVAILABLE and torch.cuda.is_available():
             device = 'cuda'
-            logger.info("✅ CUDA available, using GPU for GNN processing")
+            logger.info(" CUDA available, using GPU for GNN processing")
         else:
             device = 'cpu'
-            logger.info("💻 Using CPU for GNN processing")
+            logger.info(" Using CPU for GNN processing")
         
-        # 处理训练集结构 / Process training structures
+        #  / Process training structures
         if structures_train and len(structures_train) > 0:
             gnn_features_train = extract_gnn_features(
                 structures_train,
@@ -1347,12 +1332,12 @@ def gnn_process(
                 output_dim=output_dim,
                 device=device
             )
-            logger.info(f"✅ GNN training features extracted: shape={gnn_features_train.shape}")
+            logger.info(f" GNN training features extracted: shape={gnn_features_train.shape}")
         else:
             logger.warning("No training structures available")
             gnn_features_train = None
         
-        # 处理验证集 / Process validation set
+        #  / Process validation set
         if structures_val and len(structures_val) > 0:
             gnn_features_val = extract_gnn_features(
                 structures_val,
@@ -1360,11 +1345,11 @@ def gnn_process(
                 output_dim=output_dim,
                 device=device
             )
-            logger.info(f"✅ GNN validation features extracted: shape={gnn_features_val.shape}")
+            logger.info(f" GNN validation features extracted: shape={gnn_features_val.shape}")
         else:
             gnn_features_val = None
         
-        # 处理测试集 / Process test set
+        #  / Process test set
         if structures_test and len(structures_test) > 0:
             gnn_features_test = extract_gnn_features(
                 structures_test,
@@ -1372,22 +1357,22 @@ def gnn_process(
                 output_dim=output_dim,
                 device=device
             )
-            logger.info(f"✅ GNN test features extracted: shape={gnn_features_test.shape}")
+            logger.info(f" GNN test features extracted: shape={gnn_features_test.shape}")
         else:
             gnn_features_test = None
     
     except Exception as e:
-        logger.error(f"❌ GNN feature extraction error: {e}. Using statistical fallback.")
+        logger.error(f" GNN feature extraction error: {e}. Using statistical fallback.")
         return _gnn_fallback(data, output_dim)
     
-    # 4. 将GNN特征与原特征矩阵合并 / Merge GNN features with original features
-    logger.info("🔗 Merging GNN features with original features...")
+    # 4. GNN / Merge GNN features with original features
+    logger.info(" Merging GNN features with original features...")
     
     if X_train is not None and gnn_features_train is not None:
-        # 确保维度匹配 / Ensure shape compatibility
+        #  / Ensure shape compatibility
         if len(gnn_features_train) == len(X_train):
             X_train_extended = np.concatenate([X_train, gnn_features_train], axis=1)
-            logger.info(f"   X_train shape: {X_train.shape} + {gnn_features_train.shape} → {X_train_extended.shape}")
+            logger.info(f"   X_train shape: {X_train.shape} + {gnn_features_train.shape}  ->  {X_train_extended.shape}")
         else:
             logger.warning(f"   Shape mismatch: X_train({len(X_train)}) vs GNN({len(gnn_features_train)}). Skipping merge.")
             X_train_extended = X_train
@@ -1397,7 +1382,7 @@ def gnn_process(
     if X_val is not None and gnn_features_val is not None:
         if len(gnn_features_val) == len(X_val):
             X_val_extended = np.concatenate([X_val, gnn_features_val], axis=1)
-            logger.info(f"   X_val shape: {X_val.shape} + {gnn_features_val.shape} → {X_val_extended.shape}")
+            logger.info(f"   X_val shape: {X_val.shape} + {gnn_features_val.shape}  ->  {X_val_extended.shape}")
         else:
             X_val_extended = X_val
     else:
@@ -1406,20 +1391,20 @@ def gnn_process(
     if X_test is not None and gnn_features_test is not None:
         if len(gnn_features_test) == len(X_test):
             X_test_extended = np.concatenate([X_test, gnn_features_test], axis=1)
-            logger.info(f"   X_test shape: {X_test.shape} + {gnn_features_test.shape} → {X_test_extended.shape}")
+            logger.info(f"   X_test shape: {X_test.shape} + {gnn_features_test.shape}  ->  {X_test_extended.shape}")
         else:
             X_test_extended = X_test
     else:
         X_test_extended = X_test
     
-    # 5. 更新特征名称 / Update feature names
+    # 5.  / Update feature names
     feature_names = list(data.get('feature_names', []))
     for i in range(output_dim):
         feature_names.append(f'gnn_{strategy}_{i}')
     
-    logger.info(f"✅ Final feature count: {len(feature_names)} (added {output_dim} GNN features)")
+    logger.info(f" Final feature count: {len(feature_names)} (added {output_dim} GNN features)")
     
-    # 6. 返回更新后的状态 / Return updated state
+    # 6.  / Return updated state
     result = {
         'X_train': X_train_extended,
         'X_val': X_val_extended,
@@ -1440,28 +1425,27 @@ def gnn_process(
         }
     }
     
-    logger.info(f"✨ GNN processing complete!")
+    logger.info(f" GNN processing complete!")
     return result
-
 
 def _gnn_fallback(data: Dict[str, Any], output_dim: int) -> Dict[str, Any]:
     """
-    GNN处理的备用方案 / GNN processing fallback mechanism
+    GNN / GNN processing fallback mechanism
     
-    当GNN不可用或数据不足时，使用简单的行级统计特征作为GNN的替代。
-    这确保即使没有深度学习框架，流水线仍然可以继续运行。
+    GNNGNN
     
-    特征统计包括: 均值, 标准差, 最小值, 最大值
+    
+    : , , , 
     Statistical features include: mean, std, min, max
     
     Args:
-        data: 流水线状态字典 / Pipeline state dict
-        output_dim: 输出特征维度 / Output feature dimension
+        data:  / Pipeline state dict
+        output_dim:  / Output feature dimension
     
     Returns:
-        dict: 包含统计特征的更新状态 / Updated state with statistical features
+        dict:  / Updated state with statistical features
     """
-    logger.info(f"📊 Using statistical fallback features with output_dim={output_dim}")
+    logger.info(f" Using statistical fallback features with output_dim={output_dim}")
     
     X_train = data.get('X_train')
     X_val = data.get('X_val')
@@ -1469,28 +1453,28 @@ def _gnn_fallback(data: Dict[str, Any], output_dim: int) -> Dict[str, Any]:
     
     def append_stats(X: Optional[np.ndarray], name: str = 'data') -> Optional[np.ndarray]:
         """
-        为数据添加行级统计特征 / Append row-wise statistics to data
+         / Append row-wise statistics to data
         
         Args:
-            X: 输入特征矩阵 / Input feature matrix
-            name: 数据集名称 / Dataset name (for logging)
+            X:  / Input feature matrix
+            name:  / Dataset name (for logging)
         
         Returns:
-            扩展后的特征矩阵 / Extended feature matrix
+             / Extended feature matrix
         """
         if X is None:
             return None
         
-        # 计算行统计特征 / Compute row-wise statistics
+        #  / Compute row-wise statistics
         mean = np.nanmean(X, axis=1, keepdims=True)
         std = np.nanstd(X, axis=1, keepdims=True)
         minv = np.nanmin(X, axis=1, keepdims=True)
         maxv = np.nanmax(X, axis=1, keepdims=True)
         
-        # 拼接统计特征 / Concatenate statistics
+        #  / Concatenate statistics
         stats = np.concatenate([mean, std, minv, maxv], axis=1)
         
-        # 填充至所需维度 / Pad to output dimension
+        #  / Pad to output dimension
         if stats.shape[1] < output_dim:
             pad_size = output_dim - stats.shape[1]
             stats = np.pad(stats, ((0, 0), (0, pad_size)), mode='constant', constant_values=0.5)
@@ -1498,15 +1482,15 @@ def _gnn_fallback(data: Dict[str, Any], output_dim: int) -> Dict[str, Any]:
             stats = stats[:, :output_dim]
         
         result = np.concatenate([X, stats], axis=1)
-        logger.info(f"   {name}: {X.shape} + {stats.shape[:1]} → {result.shape}")
+        logger.info(f"   {name}: {X.shape} + {stats.shape[:1]}  ->  {result.shape}")
         return result
     
-    # 应用统计特征 / Apply statistics
+    #  / Apply statistics
     X_train_ext = append_stats(X_train, 'X_train')
     X_val_ext = append_stats(X_val, 'X_val')
     X_test_ext = append_stats(X_test, 'X_test')
     
-    # 更新特征名称 / Update feature names
+    #  / Update feature names
     feature_names = list(data.get('feature_names', []))
     for i in range(output_dim):
         feature_names.append(f'gnn_fallback_{i}')
@@ -1533,22 +1517,22 @@ def _gnn_fallback(data: Dict[str, Any], output_dim: int) -> Dict[str, Any]:
 
 def prepare_node_input(node_key: str, state: dict, verbose: bool = False) -> dict:
     """
-    为指定节点准备输入数据。
+    
     Prepare input data for the specified node.
     """
     if verbose:
-        print(f"\n[节点 {node_key}] 输入 keys: {list(state.keys())}")
+        print(f"\n[ {node_key}]  keys: {list(state.keys())}")
         if state.get('X_train') is not None:
-            print(f"[节点 {node_key}] X_train shape: {state['X_train'].shape}")
+            print(f"[ {node_key}] X_train shape: {state['X_train'].shape}")
         if state.get('y_train') is not None:
-            print(f"[节点 {node_key}] y_train preview: {state['y_train'][:5]}")
+            print(f"[ {node_key}] y_train preview: {state['y_train'][:5]}")
 
     if node_key == 'N0':
-        # N0 数据获取节点不需要输入 / N0 data fetch node needs no input
+        # N0  / N0 data fetch node needs no input
         return {}
     
     elif node_key == 'N2':
-        # N2 特征矩阵节点需要原始数据 / N2 feature matrix node needs raw data
+        # N2  / N2 feature matrix node needs raw data
         required_keys = ['train_df', 'test_df']
         validate_state_keys(state, required_keys, node_key)
         return {
@@ -1557,7 +1541,7 @@ def prepare_node_input(node_key: str, state: dict, verbose: bool = False) -> dic
         }
 
     elif node_key == 'N1':
-        # N1 缺失值处理节点需要特征矩阵和标签
+        # N1 
         required_keys = ['X_train', 'X_val', 'y_train', 'y_val']
         validate_state_keys(state, required_keys, node_key)
         return {
@@ -1570,19 +1554,19 @@ def prepare_node_input(node_key: str, state: dict, verbose: bool = False) -> dic
         }
 
     elif node_key in ('N3', 'N4'):
-        # N3/N4 特征选择与缩放，传递全部 X/y
+        # N3/N4  X/y
         required_keys = ['X_train', 'X_val','X_test', 'y_train', 'y_val','y_test']
         validate_state_keys(state, required_keys, node_key)
         X_train = state['X_train']
         X_val = state['X_val']
         y_train = state['y_train']
         y_val = state['y_val']
-        # 处理缺失值样本（如有）
+        # 
         bad_train = np.any(pd.isna(X_train), axis=1)
         bad_val = np.any(pd.isna(X_val), axis=1)
         train_idx = np.where(bad_train)[0]
         val_idx = np.where(bad_val)[0]
-        # 显式用.any()判断是否有需要删除的样本，避免Series歧义
+        # .any()Series
         if (train_idx.size > 0) or (val_idx.size > 0):
             if verbose:
                 print(f" before {node_key}: drop {len(train_idx)} train / {len(val_idx)} val samples due to missing values")
@@ -1601,10 +1585,10 @@ def prepare_node_input(node_key: str, state: dict, verbose: bool = False) -> dic
         }
 
     elif node_key == 'N5':
-        # N5 模型训练节点：确保标签已分割 / N5 training node: ensure labels are split
+        # N5  / N5 training node: ensure labels are split
         if 'y_train' not in state:
             if verbose:
-                print("    📝 分割标签数据 / Splitting label data...")
+                print("      / Splitting label data...")
             split_labels(state)
         return {
             'X_train': state.get('X_train'),
@@ -1617,86 +1601,83 @@ def prepare_node_input(node_key: str, state: dict, verbose: bool = False) -> dic
         }
 
     else:
-        # 其他节点使用完整状态 / Other nodes use full state
+        #  / Other nodes use full state
         return state
-
 
 def validate_state_keys(state: Dict[str, Any], required_keys: list, node_key: str) -> None:
     """
-    验证状态字典中是否包含必需的键。
+    
     Validate that the state dict contains required keys.
     """
     missing_keys = [key for key in required_keys if key not in state]
     if missing_keys:
-        raise KeyError(f"节点 {node_key} 缺少必需的状态键: {missing_keys} / Node {node_key} missing required state keys: {missing_keys}")
-
+        raise KeyError(f" {node_key} : {missing_keys} / Node {node_key} missing required state keys: {missing_keys}")
 
 def split_labels(state: Dict[str, Any]) -> None:
     """
-    分割标签数据为训练集和验证集。
+    
     Split label data into train and validation sets.
     """
     if 'train_df' not in state:
-        raise KeyError("State中缺少train_df / Missing train_df in state")
+        raise KeyError("Statetrain_df / Missing train_df in state")
     y_full = state['train_df'][TARGET_PROP].values
     split_idx = int(0.8 * len(y_full))
     state['y_train'], state['y_val'] = y_full[:split_idx], y_full[split_idx:]
-    # 如果有测试集，也提取测试标签 / If test set exists, extract test labels too
+    #  / If test set exists, extract test labels too
     if state.get('test_df') is not None:
         state['y_test'] = state['test_df'][TARGET_PROP].values
-
 
 def update_state(node_key: str,
                  node_output: Dict[str, Any],
                  state: Dict[str, Any],
                  verbose: bool = False) -> None:
     """Merge node output and safeguard state consistency."""
-    # ---------- 0) 通用：合并输出 ----------
-    # 若节点输出含error字段，直接写入state并抛出异常，防止流水线继续执行
+    # ---------- 0)  ----------
+    # errorstate
     if node_output and isinstance(node_output, dict) and 'error' in node_output:
         state['error'] = node_output['error']
-        raise RuntimeError(f"节点 {node_key} 执行失败: {node_output['error']}")
+        raise RuntimeError(f" {node_key} : {node_output['error']}")
     state.update(node_output or {})
 
-    # ---------- 1) N0: 数据抓取节点 ----------
+    # ---------- 1) N0:  ----------
     if node_key == 'N0':
-        # 1.1 取出三份 DataFrame
+        # 1.1  DataFrame
         train_df = node_output.get('train_data')
         test_df  = node_output.get('test_data')
         full_df  = node_output.get('full_data')
 
-        # 1.2 严格校验
+        # 1.2 
         for name, df_ in [('train_data', train_df),
                           ('test_data',  test_df),
                           ('full_data',  full_df)]:
             if df_ is None or not isinstance(df_, pd.DataFrame):
-                raise RuntimeError(f"N0 输出缺少有效的 {name}")
+                raise RuntimeError(f"N0  {name}")
 
-        # 1.3 写回 state
+        # 1.3  state
         state['train_df'] = train_df
         state['test_df']  = test_df
         state['full_df']  = full_df
 
-        # 1.4 ⚠️ 清理占位 y_*（避免 len(None)）
+        # 1.4   y_* len(None)
         for k in ('y_train', 'y_val', 'y_test',
-                  'X_train', 'X_val', 'X_test'):   # ← 加上这三项
+                  'X_train', 'X_val', 'X_test'):   # ← 
             if state.get(k) is None:
                 state.pop(k, None)
-    # ---------- 2) N2: 特征矩阵节点 ----------
+    # ---------- 2) N2:  ----------
     elif node_key == 'N2':
         if node_output.get('y_train') is None or node_output.get('y_val') is None:
-            raise RuntimeError('N2 输出缺少 y_train 或 y_val')
+            raise RuntimeError('N2  y_train  y_val')
     
     elif node_key in ('N1', 'N3', 'N4', 'N6', 'N7'):
-        #  确认中间节点输出包含完整的训练/验证特征和标签 / Validate intermediate node outputs
+        #  / / Validate intermediate node outputs
         if node_output.get('X_train') is None or node_output.get('X_val') is None:
-            raise RuntimeError(f"{node_key} 输出缺少 X_train 或 X_val")
+            raise RuntimeError(f"{node_key}  X_train  X_val")
         if node_output.get('y_train') is None or node_output.get('y_val') is None:
-            raise RuntimeError(f"{node_key} 输出缺少 y_train 或 y_val")
+            raise RuntimeError(f"{node_key}  y_train  y_val")
 
-    # ---------- 3) N5: 训练节点 ----------
+    # ---------- 3) N5:  ----------
     elif node_key in ('N5', 'N8'):
         if 'y_val_pred' not in node_output:
-            raise RuntimeError('N5 输出缺少/ is lack of  y_val_pred')
+            raise RuntimeError('N5 / is lack of  y_val_pred')
  
 

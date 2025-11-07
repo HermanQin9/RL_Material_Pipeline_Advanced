@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # PPO Training Service
+  training:
+    build:
+      context: .
+      target: development
+    container_name: matform-ppo-training
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./logs:/app/logs
+    environment:
+      - PIPELINE_TEST=1
+      - MP_API_KEY=${MP_API_KEY:-your_api_key_here}
+    command: python scripts/train_ppo.py --episodes 50
+    networks:
+      - matform-network
+    restart: unless-stopped
+
+  # Dashboard Service (Plotly/Dash)
+  dashboard:
+    build:
+      context: .
+      target: development
+    container_name: matform-ppo-dashboard
+    volumes:
+      - ./dash_app:/app/dash_app
+      - ./logs:/app/logs
+      - ./models:/app/models
+    ports:
+      - "8050:8050"
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: python dash_app/app.py
+    networks:
+      - matform-network
+    restart: unless-stopped
+    depends_on:
+      - training
+
+  # Testing Service
+  testing:
+    build:
+      context: .
+      target: development
+    container_name: matform-ppo-testing
+    volumes:
+      - ./tests:/app/tests
+      - ./data:/app/data
+    environment:
+      - PIPELINE_TEST=1
+      - PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+    command: pytest tests/ -v --tb=short
+    networks:
+      - matform-network
+    profiles:
+      - test
+
+networks:
+  matform-network:
+    driver: bridge
+
+volumes:
+  data-volume:
+  models-volume:
+  logs-volume:

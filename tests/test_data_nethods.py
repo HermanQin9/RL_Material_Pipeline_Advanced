@@ -1,5 +1,5 @@
 # tests/test_data_methods.py
-"""单元测试 fetch_and_featurize and helpers"""
+""" fetch_and_featurize and helpers"""
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -15,16 +15,16 @@ methods_data_loaded = False
 import methods.data_methods as dm
 from config import PROC_DIR, CACHE_FILE
 
-# 临时文件路径
+# 
 TMP_CACHE = Path(PROC_DIR) / "tmp_test_cache.pkl"
 
 @ pytest.fixture(autouse=True)
 def setup_and_teardown(tmp_path, monkeypatch):
-    # 指定测试缓存路径
+    # 
     monkeypatch.setattr(dm, 'CACHE_PATH', tmp_path / "cache.pkl")
     monkeypatch.setattr(dm, 'PROC_PATH', tmp_path)
     yield
-    # 清理
+    # 
 
 class X:
     """Picklable dummy composition with stable as_dict per instance."""
@@ -42,7 +42,7 @@ class DummyComp:
         return {'Fe': self._fe}
 
 def make_dummy_df(n: int = 10) -> pd.DataFrame:
-    # 构造简易 DataFrame（composition 使用可 picklable 的对象，并且正确携带 Fe 值）
+    #  DataFramecomposition  picklable  Fe 
     data = {
         'composition': [X(i % 2) for i in range(n)],
         'structure': [None] * n,
@@ -50,17 +50,15 @@ def make_dummy_df(n: int = 10) -> pd.DataFrame:
     }
     return pd.DataFrame(data)
 
-
 def test_split_by_fe():
     df = make_dummy_df(5)
     train, test = dm.split_by_fe(df)
-    # train 应包含 Fe=0
+    # train  Fe=0
     assert all(d['Fe'] == 0 for m in train['composition'] for d in [m.as_dict()])
     assert all(d['Fe'] == 1 for m in test['composition'] for d in [m.as_dict()])
 
-
 def test_fetch_and_featurize_cache(tmp_path, monkeypatch):
-    # 写入 dict 缓存
+    #  dict 
     dummy = make_dummy_df(8)
     cache_dict = { 'train_data': dummy.iloc[:4], 'test_data': dummy.iloc[4:], 'full_data': dummy }
     with open(dm.CACHE_PATH, 'wb') as f:
@@ -69,14 +67,13 @@ def test_fetch_and_featurize_cache(tmp_path, monkeypatch):
     assert 'train_data' in out and 'test_data' in out and 'full_data' in out
     assert out['train_data'].shape[0] == 4
 
-
 def test_fetch_and_featurize_dataframe_cache(tmp_path, monkeypatch):
-    # 写入 DataFrame 缓存
+    #  DataFrame 
     dummy = make_dummy_df(6)
     with open(dm.CACHE_PATH, 'wb') as f:
         pickle.dump(dummy, f)
     out = dm.fetch_and_featurize(cache=True)
-    # 总数等于 dummy
+    #  dummy
     assert out['full_data'].shape[0] == 6
     # train+test = full
     assert out['train_data'].shape[0] + out['test_data'].shape[0] == 6

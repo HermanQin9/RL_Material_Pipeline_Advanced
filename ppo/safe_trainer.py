@@ -12,12 +12,11 @@ import numpy as np
 from env.pipeline_env import PipelineEnv
 from ppo.trainer import PPOTrainer
 
-
 class SafePPOTrainer(PPOTrainer):
     """Augmented PPO trainer adding gradient safety checks for experimentation."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
+        very().__init__(*args, **kwargs)
         self.training_logs: Dict[str, list] = {
             "episodes": [],
             "rewards": [],
@@ -68,7 +67,7 @@ class SafePPOTrainer(PPOTrainer):
             return 0.0, 0
 
     def safe_train(self, num_episodes: int = 10) -> Dict[str, list]:
-        print(f"🚀 开始安全PPO训练，共{num_episodes}轮")
+        print(f" PPO{num_episodes}")
         for episode in range(num_episodes):
             print(f"Episode {episode + 1}/{num_episodes}")
             reward, length = self.safe_train_episode()
@@ -76,15 +75,14 @@ class SafePPOTrainer(PPOTrainer):
             self.training_logs["rewards"].append(reward)
             self.training_logs["losses"].append(float(np.random.random() * 0.5))
             self.training_logs["values"].append(float(np.random.random() * 0.5))
-            print(f"  奖励: {reward:.3f}, 长度: {length}")
+            print(f"  : {reward:.3f}, : {length}")
             if (episode + 1) % 5 == 0:
                 avg_reward = float(np.mean(self.training_logs["rewards"][-5:]))
-                print(f"  最近5轮平均奖励: {avg_reward:.3f}")
+                print(f"  5: {avg_reward:.3f}")
         return self.training_logs
 
-
 def plot_detailed_training_curves(training_logs: Dict[str, list], save_path: str = "logs/detailed_ppo_curves.png"):
-    print("📈 生成详细训练曲线图…")
+    print(" …")
 
     episodes = training_logs["episodes"]
     rewards = training_logs["rewards"]
@@ -134,39 +132,37 @@ def plot_detailed_training_curves(training_logs: Dict[str, list], save_path: str
     backup_path = Path("logs") / f"ppo_curves_{timestamp}.png"
     plt.savefig(backup_path, dpi=300, bbox_inches="tight")
 
-    print(f"✅ 详细训练曲线已保存到: {save_path}")
-    print(f"✅ 备份已保存到: {backup_path}")
+    print(f" : {save_path}")
+    print(f" : {backup_path}")
     return fig
 
-
 def analyze_training_performance(training_logs: Dict[str, list]) -> None:
-    print("\n📊 训练性能分析:")
+    print("\n :")
 
     rewards = training_logs["rewards"]
     episodes = training_logs["episodes"]
     if not rewards:
-        print("   ❌ 没有训练数据")
+        print("    ")
         return
 
-    print(f"   📈 总训练轮数: {len(episodes)}")
-    print(f"   🎯 平均奖励: {np.mean(rewards):.3f}")
-    print(f"   📊 奖励标准差: {np.std(rewards):.3f}")
-    print(f"   🔝 最高奖励: {np.max(rewards):.3f}")
-    print(f"   🔻 最低奖励: {np.min(rewards):.3f}")
+    print(f"    : {len(episodes)}")
+    print(f"    : {np.mean(rewards):.3f}")
+    print(f"    : {np.std(rewards):.3f}")
+    print(f"    : {np.max(rewards):.3f}")
+    print(f"    : {np.min(rewards):.3f}")
 
     if len(rewards) >= 2:
         mid = len(rewards) // 2
         initial_avg = float(np.mean(rewards[:mid]))
         final_avg = float(np.mean(rewards[mid:]))
         improvement = final_avg - initial_avg
-        print(f"   📈 前半段平均奖励: {initial_avg:.3f}")
-        print(f"   📈 后半段平均奖励: {final_avg:.3f}")
-        print(f"   🚀 奖励改进: {improvement:.3f}")
+        print(f"    : {initial_avg:.3f}")
+        print(f"    : {final_avg:.3f}")
+        print(f"    : {improvement:.3f}")
         if improvement > 0:
-            print("   ✅ 显示学习改进趋势!")
+            print("    !")
         else:
-            print("   ⚠️ 需要调整超参数")
-
+            print("    ")
 
 def run_safe_training(num_episodes: int = 15):
     env = PipelineEnv()

@@ -8,14 +8,13 @@ import torch.nn.functional as F
 from typing import Dict, Any, Tuple, Optional
 import numpy as np
 
-
 class PPOPolicy(nn.Module):
     """
     PPO Policy Network for Pipeline Optimization
     """
     
     def __init__(self, obs_dim: int, action_dim: int, hidden_dim: int = 256):
-        super(PPOPolicy, self).__init__()
+        very(PPOPolicy, self).__init__()
         
         self.obs_dim = obs_dim
         self.action_dim = action_dim

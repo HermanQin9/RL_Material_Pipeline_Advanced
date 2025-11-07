@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""绘制最近一次PPO训练的学习曲线 / Plot learning curves from the latest PPO checkpoint."""
+"""PPO / Plot learning curves from the latest PPO checkpoint."""
 from __future__ import annotations
 
 import argparse
@@ -14,7 +14,6 @@ import numpy as np
 
 from ppo.analysis import find_latest_checkpoint, load_training_data, rolling_mean
 
-
 def plot_curves(rewards: Sequence[float], lengths: Sequence[float], output: Path, window: int) -> Path:
     rewards_arr = np.asarray(rewards, dtype=float)
     lengths_arr = np.asarray(lengths, dtype=float) if lengths else np.zeros_like(rewards_arr)
@@ -27,15 +26,15 @@ def plot_curves(rewards: Sequence[float], lengths: Sequence[float], output: Path
     if smoothed is not None:
         moving_avg, moving_eps = smoothed
         ax1.plot(moving_eps, moving_avg, label=f"{window}-episode Moving Avg", color="#d62728", linewidth=2)
-    ax1.set_ylabel("Reward / 奖励")
-    ax1.set_title("PPO Episode Rewards (Latest Run)\n最新训练轮次奖励轨迹")
+    ax1.set_ylabel("Reward / ")
+    ax1.set_title("PPO Episode Rewards (Latest Run)\n")
     ax1.grid(alpha=0.3)
     ax1.legend()
 
     ax2.plot(episodes, lengths_arr, label="Episode Length", color="#2ca02c", marker="o", markersize=3, linewidth=1)
-    ax2.set_xlabel("Episode / 回合")
-    ax2.set_ylabel("Length / 步数")
-    ax2.set_title("Episode Lengths / 每轮步数")
+    ax2.set_xlabel("Episode / ")
+    ax2.set_ylabel("Length / ")
+    ax2.set_title("Episode Lengths / ")
     ax2.grid(alpha=0.3)
     ax2.legend()
 
@@ -43,7 +42,6 @@ def plot_curves(rewards: Sequence[float], lengths: Sequence[float], output: Path
     output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output, dpi=300, bbox_inches="tight")
     return output
-
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Plot learning curves from the latest PPO checkpoint")
@@ -61,11 +59,10 @@ def main() -> None:
     output_path = args.output or Path("logs") / f"ppo_learning_curves_{timestamp}.png"
 
     plot_curves(rewards, lengths, output_path, window=max(2, args.window))
-    print(f"✅ 学习曲线已保存: {output_path}")
-    print(f"   数据来源: {checkpoint_path}")
-    print(f"   总回合数: {len(rewards)}")
-    print(f"   奖励范围: {min(rewards):.3f} ~ {max(rewards):.3f}")
-
+    print(f" : {output_path}")
+    print(f"   : {checkpoint_path}")
+    print(f"   : {len(rewards)}")
+    print(f"   : {min(rewards):.3f} ~ {max(rewards):.3f}")
 
 if __name__ == "__main__":
     main()

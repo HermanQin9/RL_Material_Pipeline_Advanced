@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-示例用法 - Example Usage
-演示如何使用 MatFormPPO 机器学习管线
+ - Example Usage
+ MatFormPPO 
 Demonstrates how to use the MatFormPPO ML pipeline
 """
 
@@ -12,15 +12,15 @@ from pathlib import Path
 parent_dir = Path(__file__).parent.parent
 sys.path.append(str(parent_dir))
 
-# 导入管线运行器和节点 / Import pipeline runner and nodes
+#  / Import pipeline runner and nodes
 from pipeline import run_pipeline
 from nodes import DataFetchNode, FeatureMatrixNode, ImputeNode, FeatureSelectionNode, ScalingNode, ModelTrainingNode
 
 def main():
-    """主函数 / Main function"""
+    """ / Main function"""
     print("=== MatFormPPO Materials ML Pipeline Demo ===")
     
-    # 1. 运行完整管线 / Run complete pipeline
+    # 1.  / Run complete pipeline
     print("\n1. Running complete ML pipeline...")
     result = run_pipeline(
         cache=True,
@@ -33,13 +33,13 @@ def main():
         model_params={'n_estimators': 10}
     )
     
-    print(f"✓ Pipeline completed successfully!")
+    print(f" Pipeline completed successfully!")
     print(f"  - Model type: {type(result['model']).__name__}")
     print(f"  - Training data shape: {result['X_train'].shape}")
     print(f"  - Validation data shape: {result['X_val'].shape}")
     print(f"  - Test data shape: {result['X_test'].shape}")
     
-    # 2. 测试不同的模型 / Test different models
+    # 2.  / Test different models
     print("\n2. Testing different ML models...")
     models_to_test = ['rf', 'xgb', 'lgb']
     
@@ -51,20 +51,20 @@ def main():
                 model_strategy=model_name,
                 model_params={'n_estimators': 5}
             )
-            print(f"   ✓ {model_name.upper()} trained successfully")
+            print(f"    {model_name.upper()} trained successfully")
         except Exception as e:
-            print(f"   ✗ {model_name.upper()} failed: {e}")
+            print(f"    {model_name.upper()} failed: {e}")
     
-    # 3. 演示单独的节点操作 / Demonstrate individual node operations
+    # 3.  / Demonstrate individual node operations
     print("\n3. Testing individual nodes...")
     
-    # N0: 数据获取 / Data fetch
+    # N0:  / Data fetch
     print("   N0: Data fetching...")
     data_node = DataFetchNode()
     fetched = data_node.execute(method='api', params={'cache': True}, data={})
-    print(f"   ✓ Fetched {len(fetched.get('train_data', []))} training materials")
+    print(f"    Fetched {len(fetched.get('train_data', []))} training materials")
     
-    # N2: 特征矩阵 / Feature matrix
+    # N2:  / Feature matrix
     print("   N2: Feature matrix construction...")
     feature_node = FeatureMatrixNode()
     features = feature_node.execute(
@@ -72,10 +72,10 @@ def main():
         params={'nan_thresh': 0.5, 'train_val_ratio': 0.8},
         data=fetched
     )
-    print(f"   ✓ Feature matrix: {features['X_train'].shape}")
+    print(f"    Feature matrix: {features['X_train'].shape}")
     
-    print("\n✓ All components working correctly!")
-    print("✓ MatFormPPO pipeline is ready for production use!")
+    print("\n All components working correctly!")
+    print(" MatFormPPO pipeline is ready for production use!")
 
 if __name__ == "__main__":
     main()

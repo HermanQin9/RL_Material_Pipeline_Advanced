@@ -7,7 +7,6 @@ import os
 import sys
 import logging
 
-
 def main() -> None:
     # Reduce logging noise for a clean output
     logging.getLogger().setLevel(logging.WARNING)
@@ -60,7 +59,6 @@ def main() -> None:
     print(f"Done: {done}")
     print(f"Reward: {reward}")
     print(f"Metrics keys: {list(metrics.keys())}")
-
 
 if __name__ == '__main__':
     main()
