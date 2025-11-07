@@ -112,7 +112,7 @@ The architecture provides enormous flexibility:
 ### Minimal Pipeline
 
 ```
-N0 → N2 → N8 → N9
+N0  ->  N2  ->  N8  ->  N9
 ```
 
 - Skips all flexible preprocessing
@@ -122,38 +122,38 @@ N0 → N2 → N8 → N9
 ### Standard Pipeline
 
 ```
-N0 → N2 → N1 → N6 → N7 → N8 → N9
+N0  ->  N2  ->  N1  ->  N6  ->  N7  ->  N8  ->  N9
 ```
 
-- Imputation → Feature selection → Scaling → Model
+- Imputation  ->  Feature selection  ->  Scaling  ->  Model
 - Classic ML preprocessing sequence
 
 ### Advanced Pipeline with GNN
 
 ```
-N0 → N2 → N3 → N4 → N1 → N5 → N6 → N7 → N8 → N9
+N0  ->  N2  ->  N3  ->  N4  ->  N1  ->  N5  ->  N6  ->  N7  ->  N8  ->  N9
 ```
 
-- Cleaning → GNN → Imputation → KG → Selection → Scaling → Model
+- Cleaning  ->  GNN  ->  Imputation  ->  KG  ->  Selection  ->  Scaling  ->  Model
 - Leverages graph neural networks for crystal structures
 - Incorporates knowledge graph enrichment
 
 ### GNN-Focused Pipeline
 
 ```
-N0 → N2 → N4 → N5 → N7 → N8 → N9
+N0  ->  N2  ->  N4  ->  N5  ->  N7  ->  N8  ->  N9
 ```
 
-- GNN → Knowledge Graph → Scaling → Model
+- GNN  ->  Knowledge Graph  ->  Scaling  ->  Model
 - Skips traditional imputation and feature selection
 - Relies on graph representations
 
 ### Invalid Sequences (Blocked by Masking)
 
-❌ `N2 → N0` - Cannot execute N0 after N2  
-❌ `N0 → N8 → N9` - Cannot skip N2 (feature matrix required)  
-❌ `N0 → N2 → N1 → N1` - Cannot execute same node twice  
-❌ `N0 → N2 → N9` - Cannot terminate without training (N8)
+ `N2  ->  N0` - Cannot execute N0 after N2  
+ `N0  ->  N8  ->  N9` - Cannot skip N2 (feature matrix required)  
+ `N0  ->  N2  ->  N1  ->  N1` - Cannot execute same node twice  
+ `N0  ->  N2  ->  N9` - Cannot terminate without training (N8)
 
 ## Implementation Details
 
@@ -383,7 +383,7 @@ reward = r2_score - mae - complexity_penalty - repetition_penalty
 
 ### Computational Complexity
 
-- **Minimal pipeline** (N0→N2→N8→N9): ~5-10 seconds
+- **Minimal pipeline** (N0 -> N2 -> N8 -> N9): ~5-10 seconds
 - **Standard pipeline** (+N1, N6, N7): ~10-20 seconds
 - **Advanced pipeline** (all nodes): ~20-40 seconds
 

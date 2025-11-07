@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-N4 GNN节点集成测试脚本 / N4 GNN Node Integration Test Script
+N4 GNN / N4 GNN Node Integration Test Script
 
-测试以下功能:
-1. GNN模块成功导入到data_methods.py
-2. 环境检查 (PyTorch, PyTorch Geometric, pymatgen)
-3. GNN函数可用性
-4. 备用方案验证 (当GNN库不可用时)
+:
+1. GNNdata_methods.py
+2.  (PyTorch, PyTorch Geometric, pymatgen)
+3. GNN
+4.  (GNN)
 
 Tests:
 1. GNN module successfully imported into data_methods.py
@@ -20,7 +20,7 @@ import logging
 import numpy as np
 from pathlib import Path
 
-# 配置日志 / Configure logging
+#  / Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -28,7 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def test_imports():
-    """测试N4 GNN模块导入 / Test N4 GNN module imports"""
+    """N4 GNN / Test N4 GNN module imports"""
     logger.info("=" * 60)
     logger.info("Test 1: GNN Module Imports")
     logger.info("=" * 60)
@@ -49,7 +49,7 @@ def test_imports():
         return False
 
 def test_environment():
-    """测试环境依赖 / Test environment dependencies"""
+    """ / Test environment dependencies"""
     logger.info("\n" + "=" * 60)
     logger.info("Test 2: Environment Dependencies")
     logger.info("=" * 60)
@@ -79,7 +79,7 @@ def test_environment():
     return True
 
 def test_gnn_functions():
-    """测试GNN函数可用性 / Test GNN function availability"""
+    """GNN / Test GNN function availability"""
     logger.info("\n" + "=" * 60)
     logger.info("Test 3: GNN Function Availability")
     logger.info("=" * 60)
@@ -101,14 +101,14 @@ def test_gnn_functions():
     return True
 
 def test_gnn_processing():
-    """测试GNN处理流程 / Test GNN processing pipeline"""
+    """GNN / Test GNN processing pipeline"""
     logger.info("\n" + "=" * 60)
     logger.info("Test 4: GNN Processing Pipeline (with dummy data)")
     logger.info("=" * 60)
     
     from methods.data_methods import gnn_process
     
-    # 创建虚拟数据 / Create dummy data
+    #  / Create dummy data
     n_train, n_features = 10, 5
     X_train = np.random.randn(n_train, n_features).astype(np.float32)
     X_val = np.random.randn(5, n_features).astype(np.float32)
@@ -120,7 +120,7 @@ def test_gnn_processing():
     
     feature_names = [f'feat_{i}' for i in range(n_features)]
     
-    # 创建状态字典 / Create state dictionary
+    #  / Create state dictionary
     data = {
         'X_train': X_train,
         'X_val': X_val,
@@ -129,16 +129,16 @@ def test_gnn_processing():
         'y_val': y_val,
         'y_test': y_test,
         'feature_names': feature_names,
-        'structures_train': [],  # 空结构列表将触发备用方案 / Empty structures will trigger fallback
+        'structures_train': [],  #  / Empty structures will trigger fallback
         'structures_val': [],
         'structures_test': []
     }
     
     try:
-        # 调用GNN处理函数 / Call GNN processing function
+        # GNN / Call GNN processing function
         result = gnn_process(data, strategy='gcn', param=0.5)
         
-        # 检查输出 / Check output
+        #  / Check output
         if 'X_train' in result and result['X_train'] is not None:
             new_shape = result['X_train'].shape
             logger.info(f"[OK] GNN processing complete")
@@ -157,14 +157,14 @@ def test_gnn_processing():
         return False
 
 def test_parameter_mapping():
-    """测试参数映射 / Test parameter mapping"""
+    """ / Test parameter mapping"""
     logger.info("\n" + "=" * 60)
     logger.info("Test 5: Parameter Mapping (param -> output_dim)")
     logger.info("=" * 60)
     
     from methods.data_methods import gnn_process
     
-    # 创建虚拟数据 / Create dummy data
+    #  / Create dummy data
     X_train = np.random.randn(5, 3).astype(np.float32)
     X_val = np.random.randn(3, 3).astype(np.float32)
     X_test = np.random.randn(2, 3).astype(np.float32)
@@ -183,9 +183,9 @@ def test_parameter_mapping():
     }
     
     test_cases = [
-        (0.0, 8),   # 小维度 / Small dimension
-        (0.5, 16),  # 中等维度 / Medium dimension
-        (1.0, 32),  # 大维度 / Large dimension
+        (0.0, 8),   #  / Small dimension
+        (0.5, 16),  #  / Medium dimension
+        (1.0, 32),  #  / Large dimension
     ]
     
     all_passed = True
@@ -206,14 +206,14 @@ def test_parameter_mapping():
     return all_passed
 
 def test_gnn_strategies():
-    """测试不同的GNN策略 / Test different GNN strategies"""
+    """GNN / Test different GNN strategies"""
     logger.info("\n" + "=" * 60)
     logger.info("Test 6: GNN Strategies")
     logger.info("=" * 60)
     
     from methods.data_methods import gnn_process
     
-    # 创建虚拟数据 / Create dummy data
+    #  / Create dummy data
     X_train = np.random.randn(5, 3).astype(np.float32)
     X_val = np.random.randn(3, 3).astype(np.float32)
     
@@ -249,7 +249,7 @@ def test_gnn_strategies():
     return all_passed
 
 def main():
-    """主测试函数 / Main test function"""
+    """ / Main test function"""
     logger.info("\n" + "=" * 60)
     logger.info("N4 GNN Integration Test Suite")
     logger.info("=" * 60)
@@ -274,7 +274,7 @@ def main():
             traceback.print_exc()
             results.append((test_name, False))
     
-    # 总结 / Summary
+    #  / Summary
     logger.info("\n" + "=" * 60)
     logger.info("Test Summary")
     logger.info("=" * 60)

@@ -1,7 +1,7 @@
 """
 Methods package for the MatFormPPO pipeline.
 Contains data processing and model training functions.
-包含数据处理和模型训练函数
+
 """
 
 # Data processing functions
@@ -11,7 +11,7 @@ from .data_methods import (
     feature_matrix,
     feature_selection,
     scale_features,
-    gnn_process,  # N4 GNN处理 / N4 GNN Processing
+    gnn_process,  # N4 GNN / N4 GNN Processing
     # Individual functions for specific strategies
     impute_mean,
     impute_median,
@@ -56,7 +56,7 @@ __all__ = [
     'feature_matrix', 
     'feature_selection',
     'scale_features',
-    'gnn_process',  # N4 GNN处理
+    'gnn_process',  # N4 GNN
     'impute_mean',
     'impute_median',
     'impute_knn',

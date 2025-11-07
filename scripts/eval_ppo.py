@@ -1,5 +1,5 @@
 """
-PPO策略评估脚本入口
+PPO
 """
 from __future__ import annotations
 
@@ -7,7 +7,6 @@ import argparse
 from typing import Sequence
 
 from ppo.evaluation import compare_policies, evaluate_policy
-
 
 def main(argv: Sequence[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Evaluate PPO policy")
@@ -23,7 +22,6 @@ def main(argv: Sequence[str] | None = None) -> None:
         evaluate_policy(args.policy_path, args.episodes, args.render)
     else:
         parser.error("Either --policy-path or --compare must be provided")
-
 
 if __name__ == "__main__":  # pragma: no cover - CLI entry
     main()

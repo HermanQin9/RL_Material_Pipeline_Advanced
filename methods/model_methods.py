@@ -69,7 +69,7 @@ def model_fit(model, data):
 def model_predict(model, data, key='X_val'):
     return model.predict(data[key]) if data.get(key) is not None else None
 
-# =========== 拆分后合并的标准 pipeline 封装 ===========
+# ===========  pipeline  ===========
 def fit_and_predict(model, data, model_name, best_params=None, search_results=None):
     import logging
     logger = logging.getLogger(__name__)
@@ -91,7 +91,7 @@ def fit_and_predict(model, data, model_name, best_params=None, search_results=No
         }
     except Exception as e:
         logger.error(f"Model training or prediction failed for {model_name}: {e}")
-        # 保证异常时输出所有字段
+        # 
         return {
             'model': model,
             'params': best_params,
@@ -102,8 +102,7 @@ def fit_and_predict(model, data, model_name, best_params=None, search_results=No
             'error': str(e)
         }
 
-
-# ========== 1. 随机森林 ==========
+# ========== 1.  ==========
 def train_rf(data, n_estimators=100, max_depth=None, random_search=False, **params):
     param_range = {'n_estimators': (50, 200), 'max_depth': (3, 13)}
     default_param = {'n_estimators': n_estimators, 'max_depth': max_depth}
@@ -192,7 +191,7 @@ def train_cat(data, iterations=100, depth=6, learning_rate=0.1, random_search=Fa
         import logging
         logger = logging.getLogger(__name__)
         logger.error("CatBoost is not available")
-        # 兜底输出所有字段
+        # 
         return {
             'model': None,
             'params': default_param,
@@ -231,8 +230,7 @@ def train_cat(data, iterations=100, depth=6, learning_rate=0.1, random_search=Fa
             'error': str(e)
         }
 
-
-# ========================= 指标计算和结果输出函数 / Metrics and Results Functions =========================
+# =========================  / Metrics and Results Functions =========================
 
 def compute_metrics_and_sizes(
     state: dict,
@@ -241,7 +239,7 @@ def compute_metrics_and_sizes(
     execution_times: dict
 ) -> tuple:
     """
-    计算性能指标和数据集大小统计。
+    
     Compute performance metrics and dataset size statistics.
     """
     from sklearn.metrics import mean_absolute_error, r2_score
@@ -251,18 +249,18 @@ def compute_metrics_and_sizes(
     from datetime import datetime
     
     try:
-        # ---------- 1) 校验必须的预测结果 ----------
+        # ---------- 1)  ----------
         required_pred_keys = ['y_val', 'y_val_pred']
         missing_keys = [key for key in required_pred_keys if key not in state]
         if missing_keys:
-            raise KeyError(f"缺少预测结果: {missing_keys} / Missing prediction results: {missing_keys}")
+            raise KeyError(f": {missing_keys} / Missing prediction results: {missing_keys}")
 
-        # ---------- 2) Non-Fe 验证集指标 ----------
+        # ---------- 2) Non-Fe  ----------
         y_non_fe, y_pred_non_fe = state['y_val'], state['y_val_pred']
         mae_non_fe = mean_absolute_error(y_non_fe, y_pred_non_fe)
         r2_non_fe  = r2_score(y_non_fe, y_pred_non_fe)
 
-        # ---------- 3) Fe 测试集指标（可选） ----------
+        # ---------- 3) Fe  ----------
         y_fe, y_pred_fe = state.get('y_test'), state.get('y_test_pred')
         if isinstance(y_fe, (list, np.ndarray)) and isinstance(y_pred_fe, (list, np.ndarray)) \
                 and len(y_fe) > 0 and len(y_pred_fe) > 0:
@@ -271,9 +269,9 @@ def compute_metrics_and_sizes(
         else:
             mae_fe = r2_fe = None
 
-        # ---------- 4) 数据集大小统计 ----------
+        # ---------- 4)  ----------
         def safe_len(obj) -> int:
-            """对 None、标量或其他无 __len__ 的对象返回 0。"""
+            """ None __len__  0"""
             try:
                 return len(obj) if obj is not None else 0
             except Exception:
@@ -291,7 +289,7 @@ def compute_metrics_and_sizes(
             )
         }
 
-        # ---------- 5) 组织指标字典 ----------
+        # ---------- 5)  ----------
         metrics = {
             'mae_non_fe_test': mae_non_fe,
             'r2_non_fe_test' : r2_non_fe,
@@ -322,46 +320,44 @@ def compute_metrics_and_sizes(
         }
         return metrics, {}
 
-
 def print_results(metrics: dict, sizes: dict) -> None:
     """
-    打印流水线执行结果。
+    
     Print pipeline execution results.
     """
-    print("📈 数据集统计 / Dataset Statistics:")
+    print("  / Dataset Statistics:")
     print("-" * 50)
-    print(f"  Non-Fe数据集 / Non-Fe Dataset:")
-    print(f"    总计 / Total: {sizes['total_non_fe']:,}")
-    print(f"    训练集 / Train: {sizes['non_fe_train']:,}")
-    print(f"    验证集 / Validation: {sizes['non_fe_test']:,}")
-    print(f"  Fe数据集 / Fe Dataset: {sizes['total_fe']:,}")
-    print(f"  特征数量 / Features: {sizes['n_features']:,}")
+    print(f"  Non-Fe / Non-Fe Dataset:")
+    print(f"     / Total: {sizes['total_non_fe']:,}")
+    print(f"     / Train: {sizes['non_fe_train']:,}")
+    print(f"     / Validation: {sizes['non_fe_test']:,}")
+    print(f"  Fe / Fe Dataset: {sizes['total_fe']:,}")
+    print(f"   / Features: {sizes['n_features']:,}")
     print()
-    print("🎯 性能指标 / Performance Metrics:")
+    print("  / Performance Metrics:")
     print("-" * 50)
-    print(f"  Non-Fe测试集 / Non-Fe Test Set:")
+    print(f"  Non-Fe / Non-Fe Test Set:")
     print(f"    MAE: {metrics['mae_non_fe_test']:.4f}")
     print(f"    R²:  {metrics['r2_non_fe_test']:.4f}")
     if metrics['mae_fe_test'] is not None:
-        print(f"  Fe测试集 / Fe Test Set:")
+        print(f"  Fe / Fe Test Set:")
         print(f"    MAE: {metrics['mae_fe_test']:.4f}")
         print(f"    R²:  {metrics['r2_fe_test']:.4f}")
     else:
-        print("  Fe测试集 / Fe Test Set: 无数据 / No data")
+        print("  Fe / Fe Test Set:  / No data")
     print()
-    print("⏱️  执行时间 / Execution Time:")
+    print("⏱   / Execution Time:")
     print("-" * 50)
     total_time = metrics['run_time_sec']
     for node, exec_time in metrics['execution_times'].items():
         percentage = (exec_time / total_time) * 100
         print(f"  {node}: {exec_time:.2f}s ({percentage:.1f}%)")
-    print(f"  总计 / Total: {total_time:.2f}s")
+    print(f"   / Total: {total_time:.2f}s")
     print()
-
 
 def save_pipeline_outputs(state: dict, metrics: dict, verbose: bool = False) -> str:
     """
-    保存流水线输出结果。
+    
     Save pipeline output results.
     """
     import pandas as pd
@@ -371,7 +367,7 @@ def save_pipeline_outputs(state: dict, metrics: dict, verbose: bool = False) -> 
     dt_str = datetime.now().strftime("%Y%m%d_%H%M%S")
     outputs_dir = os.path.join(MODEL_DIR, f"run_{dt_str}")
     
-    # 准备测试结果 DataFrame / Prepare test results DataFrame
+    #  DataFrame / Prepare test results DataFrame
     test_results = None
     if state.get('y_test') is not None and state.get('y_test_pred') is not None:
         test_results = pd.DataFrame({
@@ -379,10 +375,10 @@ def save_pipeline_outputs(state: dict, metrics: dict, verbose: bool = False) -> 
             'y_pred': state['y_test_pred']
         })
     
-    # 创建输出目录
+    # 
     os.makedirs(outputs_dir, exist_ok=True)
     
-    # 保存模型和其他组件
+    # 
     if state.get('model') is not None:
         joblib.dump(state['model'], os.path.join(outputs_dir, 'model.joblib'))
     
@@ -392,11 +388,11 @@ def save_pipeline_outputs(state: dict, metrics: dict, verbose: bool = False) -> 
     if state.get('selector') is not None:
         joblib.dump(state['selector'], os.path.join(outputs_dir, 'selector.joblib'))
     
-    # 保存特征名称
+    # 
     if state.get('feature_names'):
         pd.Series(state['feature_names']).to_csv(os.path.join(outputs_dir, "feature_names.csv"), index=False)
     
-    # 保存参数
+    # 
     if state.get('params') is not None:
         if isinstance(state['params'], dict):
             pd.Series(state['params']).to_csv(os.path.join(outputs_dir, "best_params.csv"), index=True)
@@ -404,11 +400,11 @@ def save_pipeline_outputs(state: dict, metrics: dict, verbose: bool = False) -> 
             with open(os.path.join(outputs_dir, "best_params.txt"), 'w') as f:
                 f.write(str(state['params']))
     
-    # 保存指标
+    # 
     with open(os.path.join(outputs_dir, 'metrics.json'), 'w') as f:
         json.dump(metrics, f, indent=2)
     
-    # 保存测试结果用于Dashboard
+    # Dashboard
     if test_results is not None:
         os.makedirs("dash_app/data", exist_ok=True)
         test_results.to_csv("dash_app/data/test_predictions.csv", index=False)

@@ -1,6 +1,6 @@
 """
 Rollout Buffer for PPO
-PPO经验回放缓冲区
+PPO
 """
 
 import numpy as np
@@ -9,24 +9,24 @@ from typing import List, Dict, Any, Tuple
 
 class RolloutBuffer:
     """
-    经验回放缓冲区，用于存储PPO训练过程中的轨迹数据
+    PPO
     Rollout buffer for storing trajectory data during PPO training
     """
     
     def __init__(self, buffer_size: int, obs_dim: int, action_dim: int):
         """
-        初始化缓冲区
+        
         
         Args:
-            buffer_size: 缓冲区大小
-            obs_dim: 观察空间维度
-            action_dim: 动作空间维度
+            buffer_size: 
+            obs_dim: 
+            action_dim: 
         """
         self.buffer_size = buffer_size
         self.obs_dim = obs_dim
         self.action_dim = action_dim
         
-        # 存储数组
+        # 
         self.observations = np.zeros((buffer_size, obs_dim), dtype=np.float32)
         self.actions = np.zeros((buffer_size, action_dim), dtype=np.float32)
         self.rewards = np.zeros(buffer_size, dtype=np.float32)
@@ -34,11 +34,11 @@ class RolloutBuffer:
         self.log_probs = np.zeros(buffer_size, dtype=np.float32)
         self.dones = np.zeros(buffer_size, dtype=np.bool_)
         
-        # GAE相关
+        # GAE
         self.advantages = np.zeros(buffer_size, dtype=np.float32)
         self.returns = np.zeros(buffer_size, dtype=np.float32)
         
-        # 当前位置
+        # 
         self.ptr = 0
         self.size = 0
         
@@ -50,7 +50,7 @@ class RolloutBuffer:
               log_prob: float, 
               done: bool):
         """
-        存储一个转换
+        
         Store a single transition
         """
         assert self.ptr < self.buffer_size
@@ -67,13 +67,13 @@ class RolloutBuffer:
     
     def compute_returns_and_advantages(self, last_value: float, gamma: float = 0.99, gae_lambda: float = 0.95):
         """
-        计算回报和优势函数 (GAE)
+         (GAE)
         Compute returns and advantages using GAE
         """
         if self.size == 0:
             return
             
-        # 计算优势函数
+        # 
         advantages = np.zeros_like(self.rewards[:self.size])
         last_gae_lambda = 0
         
@@ -88,10 +88,10 @@ class RolloutBuffer:
             delta = self.rewards[step] + gamma * next_value * next_non_terminal - self.values[step]
             advantages[step] = last_gae_lambda = delta + gamma * gae_lambda * next_non_terminal * last_gae_lambda
         
-        # 计算回报
+        # 
         returns = advantages + self.values[:self.size]
         
-        # 归一化优势函数
+        # 
         advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-8)
         
         self.advantages[:self.size] = advantages
@@ -99,7 +99,7 @@ class RolloutBuffer:
     
     def get_batch(self, batch_size: int = None) -> Dict[str, torch.Tensor]:
         """
-        获取一个批次的数据
+        
         Get a batch of data
         """
         if batch_size is None:
@@ -107,7 +107,7 @@ class RolloutBuffer:
             
         assert self.size >= batch_size
         
-        # 随机采样
+        # 
         indices = np.random.choice(self.size, batch_size, replace=False)
         
         batch = {
@@ -122,7 +122,7 @@ class RolloutBuffer:
         return batch # type: ignore
     
     def clear(self):
-        """清空缓冲区"""
+        """"""
         self.ptr = 0
         self.size = 0
         

@@ -10,7 +10,6 @@ import torch
 from env.pipeline_env import PipelineEnv
 from ppo.policy import PPOPolicy
 
-
 def evaluate_policy(policy_path: str, num_episodes: int = 10, render: bool = False) -> Dict[str, Any]:
     """Evaluate a trained PPO policy stored at ``policy_path``."""
     env = PipelineEnv()
@@ -30,7 +29,7 @@ def evaluate_policy(policy_path: str, num_episodes: int = 10, render: bool = Fal
     episode_lengths: list[int] = []
     success_count = 0
 
-    print(f"\n🎯 开始评估 {num_episodes} 个回合…")
+    print(f"\n  {num_episodes} …")
 
     for episode in range(num_episodes):
         env.reset()
@@ -39,7 +38,7 @@ def evaluate_policy(policy_path: str, num_episodes: int = 10, render: bool = Fal
         done = False
 
         if render:
-            print(f"\n--- 回合 {episode + 1} ---")
+            print(f"\n---  {episode + 1} ---")
 
         while not done and steps < 100:
             with torch.no_grad():
@@ -60,7 +59,7 @@ def evaluate_policy(policy_path: str, num_episodes: int = 10, render: bool = Fal
 
             if render:
                 method_name = env.methods_for_node[node_name][method_idx]
-                print(f"  步骤 {steps}: {node_name}.{method_name}(param={param_value:.3f})")
+                print(f"   {steps}: {node_name}.{method_name}(param={param_value:.3f})")
 
             _, reward, terminated, truncated, _ = env.step(action)
             done = terminated or truncated
@@ -72,19 +71,19 @@ def evaluate_policy(policy_path: str, num_episodes: int = 10, render: bool = Fal
         if total_reward > 0:
             success_count += 1
         if render:
-            print(f"  回合奖励: {total_reward:.3f}, 步数: {steps}")
+            print(f"  : {total_reward:.3f}, : {steps}")
 
     avg_reward = float(np.mean(episode_rewards))
     std_reward = float(np.std(episode_rewards))
     avg_length = float(np.mean(episode_lengths))
     success_rate = success_count / num_episodes
 
-    print("\n📊 评估结果:")
-    print(f"  平均奖励: {avg_reward:.3f} ± {std_reward:.3f}")
-    print(f"  平均步数: {avg_length:.1f}")
-    print(f"  成功率: {success_rate:.1%}")
-    print(f"  最佳奖励: {max(episode_rewards):.3f}")
-    print(f"  最差奖励: {min(episode_rewards):.3f}")
+    print("\n :")
+    print(f"  : {avg_reward:.3f} ± {std_reward:.3f}")
+    print(f"  : {avg_length:.1f}")
+    print(f"  : {success_rate:.1%}")
+    print(f"  : {max(episode_rewards):.3f}")
+    print(f"  : {min(episode_rewards):.3f}")
 
     return {
         "avg_reward": avg_reward,
@@ -94,20 +93,19 @@ def evaluate_policy(policy_path: str, num_episodes: int = 10, render: bool = Fal
         "episode_rewards": episode_rewards,
     }
 
-
 def compare_policies(policy_paths: Iterable[str], num_episodes: int = 10) -> Dict[str, Dict[str, float]]:
     """Evaluate multiple policies and print a comparison table."""
     results: Dict[str, Dict[str, float]] = {}
     for policy_path in policy_paths:
         print("\n" + "=" * 50)
-        print(f"评估策略: {policy_path}")
+        print(f": {policy_path}")
         print("=" * 50)
         results[policy_path] = evaluate_policy(policy_path, num_episodes, render=False)
 
     print("\n" + "=" * 60)
-    print("📋 策略比较结果")
+    print(" ")
     print("=" * 60)
-    print(f"{'策略':<30} {'平均奖励':<12} {'成功率':<10} {'平均步数':<10}")
+    print(f"{'':<30} {'':<12} {'':<10} {'':<10}")
     print("-" * 60)
     for policy_path, result in results.items():
         policy_name = Path(policy_path).stem

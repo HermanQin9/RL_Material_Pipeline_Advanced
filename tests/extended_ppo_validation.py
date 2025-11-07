@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Extended PPO validation helpers.
 
-扩展版 PPO 训练验证工具，提供安全可导入的分析逻辑。
+ PPO 
 
 This module previously orchestrated long and resource-intensive PPO training
 runs.  Legacy merge artefacts made it impossible to import, breaking the global
@@ -45,7 +45,6 @@ matplotlib.rcParams.setdefault(
 )
 matplotlib.rcParams.setdefault("axes.unicode_minus", False)
 
-
 @dataclass
 class ValidationConfig:
     """Configuration for the extended validation workflow."""
@@ -62,7 +61,6 @@ class ValidationConfig:
 
         return Path(self.script_path).resolve()
 
-
 def _default_config() -> ValidationConfig:
     run_full = os.getenv("RUN_FULL_PPO_VALIDATION", "0") == "1"
 
@@ -77,7 +75,6 @@ def _default_config() -> ValidationConfig:
         script_path = PIPELINE_ROOT / "scripts" / "train_ppo_safe.py"
 
     return ValidationConfig(run_full=run_full, script_path=script_path)
-
 
 def _simulate_training(config: ValidationConfig) -> Dict[str, np.ndarray]:
     """Create deterministic pseudo-training traces."""
@@ -100,7 +97,6 @@ def _simulate_training(config: ValidationConfig) -> Dict[str, np.ndarray]:
         "entropy": policy_entropy,
         "smoothed_rewards": smoothed_rewards,
     }
-
 
 def _run_subprocess(config: ValidationConfig) -> Dict[str, object]:
     script = config.resolved_script()
@@ -148,7 +144,6 @@ def _run_subprocess(config: ValidationConfig) -> Dict[str, object]:
         "config": asdict(config),
     }
 
-
 def run_extended_ppo_training(config: ValidationConfig | None = None) -> Dict[str, object]:
     """Run the extended PPO validation flow or its simulation."""
 
@@ -165,7 +160,6 @@ def run_extended_ppo_training(config: ValidationConfig | None = None) -> Dict[st
         "final_reward": float(traces["rewards"][-1]),
         "best_smoothed_reward": float(np.max(traces["smoothed_rewards"])),
     }
-
 
 def create_comprehensive_analysis(results: Dict[str, object]) -> Dict[str, object]:
     """Generate a compact analysis bundle from training results."""
@@ -206,7 +200,7 @@ def create_comprehensive_analysis(results: Dict[str, object]) -> Dict[str, objec
         axes[1, 1].text(
             0.02,
             0.95,
-            "关键指标 / Key Metrics",
+            " / Key Metrics",
             transform=axes[1, 1].transAxes,
             va="top",
             fontsize=11,
@@ -214,13 +208,13 @@ def create_comprehensive_analysis(results: Dict[str, object]) -> Dict[str, objec
         axes[1, 1].text(
             0.02,
             0.7,
-            f"最终奖励 Final Reward: {results.get('final_reward'):.3f}",
+            f" Final Reward: {results.get('final_reward'):.3f}",
             transform=axes[1, 1].transAxes,
         )
         axes[1, 1].text(
             0.02,
             0.55,
-            f"最优平滑奖励 Best Smoothed: {results.get('best_smoothed_reward'):.3f}",
+            f" Best Smoothed: {results.get('best_smoothed_reward'):.3f}",
             transform=axes[1, 1].transAxes,
         )
 
@@ -246,7 +240,6 @@ def create_comprehensive_analysis(results: Dict[str, object]) -> Dict[str, objec
 
     return analysis
 
-
 def print_comprehensive_analysis(analysis: Dict[str, object]) -> None:
     """Pretty-print the analysis report."""
 
@@ -255,24 +248,23 @@ def print_comprehensive_analysis(analysis: Dict[str, object]) -> None:
     summary = summary_raw if isinstance(summary_raw, dict) else {}
 
     print("====== Extended PPO Validation Report ======")
-    print(f"Mode 模式: {mode}")
+    print(f"Mode : {mode}")
     if analysis.get("timestamp"):
-        print(f"Timestamp 时间戳: {analysis['timestamp']}")
+        print(f"Timestamp : {analysis['timestamp']}")
 
     if mode == "simulation":
         final_reward = summary.get('final_reward')
         best_smoothed = summary.get('best_smoothed_reward')
         episodes = summary.get('episodes')
-        print(f"Final reward 最终奖励: {final_reward:.3f}" if final_reward else "Final reward: N/A")
-        print(f"Best smoothed reward 最优平滑奖励: {best_smoothed:.3f}" if best_smoothed else "Best smoothed: N/A")
-        print(f"Total episodes 总轮次: {episodes}" if episodes else "Total episodes: N/A")
+        print(f"Final reward : {final_reward:.3f}" if final_reward else "Final reward: N/A")
+        print(f"Best smoothed reward : {best_smoothed:.3f}" if best_smoothed else "Best smoothed: N/A")
+        print(f"Total episodes : {episodes}" if episodes else "Total episodes: N/A")
     else:
-        print("Subprocess details 子进程详情:")
+        print("Subprocess details :")
         print(f"  Script: {summary.get('script')}")
         print(f"  Return code: {summary.get('returncode')}")
 
     print("===========================================")
-
 
 if __name__ == "__main__":  # pragma: no cover - manual smoke test
     RESULT = run_extended_ppo_training()

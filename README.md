@@ -1,4 +1,4 @@
-# MatFormPPO: PPO-Driven AutoML for Materials Science 🔬
+# MatFormPPO: PPO-Driven AutoML for Materials Science
 
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
@@ -11,80 +11,80 @@
 
 ---
 
-## 🎯 Project Overview
+## Project Overview
 
 **MatFormPPO** is an advanced **Reinforcement Learning-driven AutoML pipeline** specifically designed for **materials science formation energy prediction**. By leveraging the **Proximal Policy Optimization (PPO)** algorithm, the system intelligently constructs optimal machine learning pipelines through automated node selection and hyperparameter tuning.
 
-### 🔬 What Makes This Special?
+### Key Capabilities
 
-- **🤖 Intelligent Pipeline Construction**: PPO agent automatically discovers optimal data processing sequences
-- **📊 Materials Science Focus**: Specialized for crystalline materials and formation energy prediction
-- **🏗️ Node-Based Architecture**: Flexible 10-node system with optional processing paths
-- **🎓 Research-Grade**: 85% success rate on 4K+ material datasets
-- **⚡ High Performance**: 695K samples/second processing speed
-
----
-
-## ✨ What's New in Latest Version
-
-### 🆕 Major Updates (October 2025)
-- ✅ **Complete Code Reorganization**: Functions organized into logical modules
-- ✅ **Unified Analysis Framework**: Centralized PPO analysis utilities in `ppo/analysis/`
-- ✅ **Enhanced Modular Design**: CLI scripts as lightweight wrappers (81% code reduction)
-- ✅ **Eliminated Code Duplication**: Removed 150+ lines of duplicate code
-- ✅ **Improved Documentation**: Comprehensive refactoring and organization reports
-
-### 🔧 Technical Enhancements (September 2025)
-- 🎯 **10-Node Flexible Architecture**: Legal node sequencing with action masks
-- 🧠 **Advanced PPO Features**: GAE(λ), minibatching, KL early stop, gradient clipping
-- 🔗 **GNN & Knowledge Graph**: Integrated placeholders for graph-based processing (N4, N5)
-- 💾 **Robust Data Caching**: Pickle/CSV fallback before API calls
-- 🪟 **Windows-Optimized**: Full PowerShell and Windows environment support
+- **Intelligent Pipeline Construction**: PPO agent automatically discovers optimal data processing sequences
+- **Materials Science Focus**: Specialized for crystalline materials and formation energy prediction
+- **Node-Based Architecture**: Flexible 10-node system with optional processing paths
+- **Research-Grade**: 85% success rate on 4K+ material datasets
+- **High Performance**: 695K samples/second processing speed
 
 ---
 
-## 🚀 Key Features
+## Latest Version Updates
+
+### Major Updates (October 2025)
+- **Complete Code Reorganization**: Functions organized into logical modules
+- **Unified Analysis Framework**: Centralized PPO analysis utilities in `ppo/analysis/`
+- **Enhanced Modular Design**: CLI scripts as lightweight wrappers (81% code reduction)
+- **Eliminated Code Duplication**: Removed 150+ lines of duplicate code
+- **Improved Documentation**: Comprehensive refactoring and organization reports
+
+### Technical Enhancements (September 2025)
+- **10-Node Flexible Architecture**: Legal node sequencing with action masks
+- **Advanced PPO Features**: GAE(λ), minibatching, KL early stop, gradient clipping
+- **GNN & Knowledge Graph**: Integrated placeholders for graph-based processing (N4, N5)
+- **Robust Data Caching**: Pickle/CSV fallback before API calls
+- **Windows-Optimized**: Full PowerShell and Windows environment support
+
+---
+
+## Key Features
 
 ### Core Capabilities
 
 | Feature | Description | Status |
 |---------|-------------|--------|
-| **🤖 Automated ML Pipeline** | PPO-driven method selection and hyperparameter tuning | ✅ Production |
-| **📈 Scalable Processing** | 200-sample testing to 4K+ production datasets | ✅ Production |
-| **🔬 Materials Science** | Formation energy prediction with Materials Project API | ✅ Production |
-| **🧪 Advanced Featurization** | matminer integration for crystal properties | ✅ Production |
-| **📊 Comprehensive Analysis** | Training curves, performance metrics, visualization | ✅ Production |
-| **🧪 Complete Test Suite** | Unit, integration, and validation tests | ✅ Production |
-| **📚 Rich Documentation** | API docs, tutorials, architecture guides | ✅ Production |
-| **🎨 Interactive Dashboard** | Real-time visualization (planned) | 🚧 In Progress |
+| **Automated ML Pipeline** | PPO-driven method selection and hyperparameter tuning | Production |
+| **Scalable Processing** | 200-sample testing to 4K+ production datasets | Production |
+| **Materials Science** | Formation energy prediction with Materials Project API | Production |
+| **Advanced Featurization** | matminer integration for crystal properties | Production |
+| **Comprehensive Analysis** | Training curves, performance metrics, visualization | Production |
+| **Complete Test Suite** | Unit, integration, and validation tests | Production |
+| **Rich Documentation** | API docs, tutorials, architecture guides | Production |
+| **Interactive Dashboard** | Real-time visualization (planned) | In Progress |
 
 ### Technical Highlights
 
-#### 🏗️ Architecture
+#### Architecture
 - **Modular Design**: Clean separation of data, models, training, and analysis
 - **Node-Based Pipeline**: Flexible 10-node system with optional processing paths
 - **Action Masking**: Intelligent constraint enforcement for valid pipeline sequences
 
-#### 🎯 Performance
+#### Performance
 - **85% Success Rate**: On 4K+ material datasets
 - **695K samples/sec**: High-throughput data processing
-- **Multi-Scale Support**: Seamless dataset switching (200 ↔ 4K)
+- **Multi-Scale Support**: Seamless dataset switching (200 to 4K samples)
 
-#### 🛡️ Robustness
+#### Robustness
 - **Safe Data Processing**: Comprehensive error handling and recovery
 - **Offline-Friendly**: Local caching with API fallback
 - **Cross-Platform**: Windows and Linux/Mac support
 
 ---
 
-## � DevOps & Infrastructure
+## DevOps and Infrastructure
 
-### Containerization & Orchestration
+### Containerization and Orchestration
 
-#### 🐳 Docker
+#### Docker
 - **Multi-Stage Builds**: Optimized images with separate development and production stages
 - **Layer Caching**: Efficient builds with intelligent dependency management
-- **Size Optimization**: Production images ~60% smaller than development builds
+- **Size Optimization**: Production images approximately 60% smaller than development builds
 
 ```bash
 # Build development image
@@ -97,7 +97,7 @@ docker build -t matform-ppo:prod --target production .
 docker run --rm -v $(pwd)/data:/app/data matform-ppo:prod
 ```
 
-#### 🎼 Docker Compose
+#### Docker Compose
 Multi-service orchestration for complex workflows:
 - **Training Service**: PPO pipeline execution with GPU support
 - **Dashboard Service**: Real-time monitoring with Plotly/Dash (port 8050)
@@ -116,20 +116,20 @@ docker-compose run --rm testing
 
 ### CI/CD Pipeline
 
-#### 🔄 GitHub Actions
+#### GitHub Actions
 Automated workflows triggered on every commit:
 
 **CI Pipeline** (`.github/workflows/ci.yml`):
-- ✅ **Code Quality Checks**: Black, Flake8, MyPy
-- ✅ **Multi-Python Testing**: Python 3.10 & 3.11 compatibility
-- ✅ **Data Validation**: Schema and integrity checks
-- ✅ **Docker Build**: Automated image building and testing
-- ✅ **Parallel Execution**: 4 jobs running concurrently
+-  **Code Quality Checks**: Black, Flake8, MyPy
+-  **Multi-Python Testing**: Python 3.10 & 3.11 compatibility
+-  **Data Validation**: Schema and integrity checks
+-  **Docker Build**: Automated image building and testing
+-  **Parallel Execution**: 4 jobs running concurrently
 
 **Code Quality Pipeline** (`.github/workflows/code-quality.yml`):
-- 🔒 **Security Scanning**: Bandit for vulnerability detection
-- 📦 **Dependency Checks**: Safety for known CVEs
-- 📊 **Coverage Reports**: Test coverage tracking
+-  **Security Scanning**: Bandit for vulnerability detection
+-  **Dependency Checks**: Safety for known CVEs
+-  **Coverage Reports**: Test coverage tracking
 
 ```yaml
 # Workflow triggers
@@ -142,7 +142,7 @@ on:
 
 ### Automation Scripts
 
-#### 🔧 Bash Scripts
+#### Bash Scripts
 Cross-platform automation for streamlined workflows:
 
 | Script | Purpose | Usage |
@@ -169,7 +169,7 @@ Cross-platform automation for streamlined workflows:
 
 ### Dependency Management
 
-#### 📦 Requirements.txt
+#### Requirements.txt
 Pinned dependencies for reproducible environments:
 ```
 torch>=2.0.0          # Deep Learning
@@ -187,7 +187,7 @@ pip install -r requirements.txt
 
 ### Configuration Management
 
-#### ⚙️ Environment Variables
+#### Environment Variables
 Secure configuration with `.env` files:
 
 ```bash
@@ -202,7 +202,7 @@ AWS_ACCESS_KEY_ID=your_aws_key  # Optional
 
 ### Infrastructure as Code
 
-#### 🏗️ Ready for Cloud Deployment
+#### Ready for Cloud Deployment
 
 **AWS Integration (Planned)**:
 - S3 for data lake storage
@@ -211,15 +211,15 @@ AWS_ACCESS_KEY_ID=your_aws_key  # Optional
 - Terraform for infrastructure provisioning
 
 **Current Setup**:
-- ✅ Docker containerization ready
-- ✅ Environment configuration template
-- ✅ Multi-stage builds for optimization
-- ✅ Service orchestration configured
-- 🔄 Cloud deployment scripts (in progress)
+-  Docker containerization ready
+-  Environment configuration template
+-  Multi-stage builds for optimization
+-  Service orchestration configured
+-  Cloud deployment scripts (in progress)
 
 ### DevOps Best Practices
 
-#### ✅ Implemented
+#### Implemented
 - **Version Control**: Git workflows with semantic commits
 - **Code Quality**: Automated linting and formatting
 - **Testing**: Comprehensive test suite with CI automation
@@ -227,161 +227,161 @@ AWS_ACCESS_KEY_ID=your_aws_key  # Optional
 - **Documentation**: Inline comments and external docs
 - **Security**: Dependency vulnerability scanning
 
-#### 📋 DevOps Metrics
+#### DevOps Metrics
 ```
-✓ Build Time: <5 minutes (cached)
-✓ Test Coverage: 85%+ (target: 90%)
-✓ Docker Image: ~2.5GB (dev), ~1.0GB (prod)
-✓ CI Pipeline: 4 parallel jobs, ~8 minutes total
-✓ Deployment: One-command deployment ready
+ Build Time: <5 minutes (cached)
+ Test Coverage: 85%+ (target: 90%)
+ Docker Image: ~2.5GB (dev), ~1.0GB (prod)
+ CI Pipeline: 4 parallel jobs, ~8 minutes total
+ Deployment: One-command deployment ready
 ```
 
 ---
 
-## �📊 Performance Benchmarks
+## Performance Benchmarks
 
 ### PPO Training Results (4K Dataset)
 ```
-✅ Success Rate:      85% (34/40 episodes)
-⚡ Processing Speed:  695,122 samples/second  
-🎯 Convergence:       ~40 episodes
-💾 Memory Efficiency: Optimized for large datasets
-🎓 Model Performance: R² > 0.85 on validation set
+ Success Rate:      85% (34/40 episodes)
+ Processing Speed:  695,122 samples/second  
+ Convergence:       ~40 episodes
+ Memory Efficiency: Optimized for large datasets
+ Model Performance: R² > 0.85 on validation set
 ```
 
 ### Model Capabilities
 | Model | Training Time | Accuracy (R²) | Feature Support |
 |-------|--------------|---------------|-----------------|
-| Random Forest | Fast | 0.87 ± 0.03 | ✅ High-dimensional |
-| XGBoost | Medium | 0.89 ± 0.02 | ✅ Non-linear patterns |
-| CatBoost | Medium | 0.88 ± 0.02 | ✅ Categorical features |
-| Gradient Boosting | Fast | 0.86 ± 0.03 | ✅ Robust to outliers |
+| Random Forest | Fast | 0.87 ± 0.03 |  High-dimensional |
+| XGBoost | Medium | 0.89 ± 0.02 |  Non-linear patterns |
+| CatBoost | Medium | 0.88 ± 0.02 |  Categorical features |
+| Gradient Boosting | Fast | 0.86 ± 0.03 |  Robust to outliers |
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 MatFormPPO/
-│
-├── 🔧 Core Pipeline
-│   ├── config.py                    # Global configuration (paths, API keys, hyperparameters)
-│   ├── nodes.py                     # Node base class and all 10 node implementations
-│   └── pipeline.py                  # Main pipeline executor (run_pipeline)
-│
-├── 📊 Data & Model Methods
-│   ├── methods/
-│   │   ├── data/                    # ✨ Data processing modules
-│   │   │   ├── generation.py       # 4K dataset generation utilities
-│   │   │   ├── validation.py       # Data validation tools
-│   │   │   └── preprocessing.py    # Cleaning, GNN, KG processing
-│   │   ├── data_methods.py          # Feature engineering & preprocessing
-│   │   └── model_methods.py         # ML model training & evaluation
-│
-├── 🤖 Reinforcement Learning
-│   ├── env/                         # RL Environment
-│   │   ├── pipeline_env.py          # PipelineEnv class (Gym-style)
-│   │   └── utils.py                 # Observation, masking, reward functions
-│   │
-│   └── ppo/                         # PPO Algorithm
-│       ├── policy.py                # Neural network policy
-│       ├── buffer.py                # Experience replay buffer
-│       ├── trainer.py               # PPO training loop
-│       ├── workflows.py             # ✨ Training workflows (4K, safe mode)
-│       ├── safe_trainer.py          # ✨ Safe training with error handling
-│       ├── evaluation.py            # ✨ Policy evaluation & comparison
-│       ├── utils.py                 # GAE, loss functions, utilities
-│       └── analysis/                # ✨ Analysis utilities
-│           ├── __init__.py          # Unified analysis exports
-│           └── results.py           # Checkpoint analysis, visualization
-│
-├── 🎮 Command-Line Interface
-│   └── scripts/
-│       ├── 🚀 Training
-│       │   ├── train_ppo.py         # Standard PPO training
-│       │   ├── train_ppo_4k.py      # 4K dataset training
-│       │   └── train_ppo_safe.py    # Safe mode training
-│       ├── 📈 Evaluation
-│       │   └── eval_ppo.py          # Policy evaluation
-│       ├── 💾 Data Management
-│       │   ├── generate_4k_data.py  # Generate 4K dataset
-│       │   └── fix_4k_data.py       # Fix incomplete datasets
-│       ├── 📊 Analysis
-│       │   └── analysis/
-│       │       ├── analyze_ppo_results.py  # Training results analysis
-│       │       ├── plot_latest_ppo.py      # Learning curves plotting
-│       │       └── reward_analysis.py      # Reward function analysis
-│       ├── 🔧 Utilities
-│       │   ├── example_usage.py     # Usage demonstrations
-│       │   ├── debug_pipeline.py    # Pipeline debugging
-│       │   └── debug/
-│       │       └── check_training_mode.py  # Environment checker
-│       └── 🎯 Entry Points
-│           ├── main.py              # Unified entry point
-│           └── run.py               # Environment-aware runner
-│
-├── 🧪 Testing & Validation
-│   └── tests/
-│       ├── test_components.py       # Component unit tests
-│       ├── test_pipeline.py         # Pipeline integration tests
-│       ├── test_ppo.py              # PPO algorithm tests
-│       ├── test_4k_data.py          # 4K dataset tests
-│       ├── test_all_models.py       # Model training tests
-│       ├── validate_ppo_training.py # Training validation
-│       ├── extended_ppo_validation.py    # Extended validation
-│       └── simplified_ppo_validation.py  # Quick validation
-│
-├── 📚 Documentation
-│   └── docs/
-│       ├── DATASET_INFO.md          # Dataset information & analysis
-│       ├── PPO_TRAINING_ANALYSIS.md # Training results analysis
-│       ├── PPO_VALIDATION_REPORT.md # Validation results
-│       ├── FUNCTION_ORGANIZATION_REVIEW.md  # ✨ Code organization review
-│       ├── REFACTORING_COMPLETION_REPORT.md # ✨ Refactoring report
-│       ├── CLEANUP_RECOMMENDATIONS.md       # ✨ Cleanup suggestions
-│       ├── PROJECT_ORGANIZATION.md  # Organization guide
-│       └── STRUCTURE_ANALYSIS.md    # Architecture analysis
-│
-├── 📓 Interactive Notebooks
-│   └── notebooks/
-│       ├── PPO_Testing_and_Debugging.ipynb  # PPO development notebook
-│       └── _setup.ipynb             # Environment setup notebook
-│
-├── 💾 Data & Models
-│   ├── data/
-│   │   ├── raw/                     # Original datasets (gitignored)
-│   │   └── processed/               # Processed data cache
-│   │       └── mp_data_cache_*.pkl  # Materials Project cache
-│   ├── models/                      # Trained model checkpoints
-│   │   └── ppo_agent*.pth           # PPO policy checkpoints
-│   └── logs/                        # Training logs & visualizations
-│       └── ppo_learning_curves_*.png
-│
-├── 🎨 Dashboard (Planned)
-│   └── dash_app/
-│       └── data/                    # Dashboard data files
-│
-├── 🗂️ Archive
-│   └── archive/
-│       └── legacy_env/              # Legacy environment implementations
-│
-└── ⚙️ Configuration
-    ├── .gitignore                   # Git ignore rules
-    ├── .github/
-    │   └── copilot-instructions.md  # AI assistant instructions
-    ├── requirements.txt             # Python dependencies (if exists)
-    ├── environment.yml              # Conda environment (if exists)
-    ├── activate_env.bat/.ps1        # Environment activation helpers
-    └── check_env.py                 # Environment validation script
+
+  Core Pipeline
+    config.py                    # Global configuration (paths, API keys, hyperparameters)
+    nodes.py                     # Node base class and all 10 node implementations
+    pipeline.py                  # Main pipeline executor (run_pipeline)
+
+  Data & Model Methods
+    methods/
+       data/                    #  Data processing modules
+          generation.py       # 4K dataset generation utilities
+          validation.py       # Data validation tools
+          preprocessing.py    # Cleaning, GNN, KG processing
+       data_methods.py          # Feature engineering & preprocessing
+       model_methods.py         # ML model training & evaluation
+
+  Reinforcement Learning
+    env/                         # RL Environment
+       pipeline_env.py          # PipelineEnv class (Gym-style)
+       utils.py                 # Observation, masking, reward functions
+   
+    ppo/                         # PPO Algorithm
+        policy.py                # Neural network policy
+        buffer.py                # Experience replay buffer
+        trainer.py               # PPO training loop
+        workflows.py             #  Training workflows (4K, safe mode)
+        safe_trainer.py          #  Safe training with error handling
+        evaluation.py            #  Policy evaluation & comparison
+        utils.py                 # GAE, loss functions, utilities
+        analysis/                #  Analysis utilities
+            __init__.py          # Unified analysis exports
+            results.py           # Checkpoint analysis, visualization
+
+  Command-Line Interface
+    scripts/
+         Training
+           train_ppo.py         # Standard PPO training
+           train_ppo_4k.py      # 4K dataset training
+           train_ppo_safe.py    # Safe mode training
+         Evaluation
+           eval_ppo.py          # Policy evaluation
+         Data Management
+           generate_4k_data.py  # Generate 4K dataset
+           fix_4k_data.py       # Fix incomplete datasets
+         Analysis
+           analysis/
+               analyze_ppo_results.py  # Training results analysis
+               plot_latest_ppo.py      # Learning curves plotting
+               reward_analysis.py      # Reward function analysis
+         Utilities
+           example_usage.py     # Usage demonstrations
+           debug_pipeline.py    # Pipeline debugging
+           debug/
+               check_training_mode.py  # Environment checker
+         Entry Points
+            main.py              # Unified entry point
+            run.py               # Environment-aware runner
+
+  Testing & Validation
+    tests/
+        test_components.py       # Component unit tests
+        test_pipeline.py         # Pipeline integration tests
+        test_ppo.py              # PPO algorithm tests
+        test_4k_data.py          # 4K dataset tests
+        test_all_models.py       # Model training tests
+        validate_ppo_training.py # Training validation
+        extended_ppo_validation.py    # Extended validation
+        simplified_ppo_validation.py  # Quick validation
+
+  Documentation
+    docs/
+        DATASET_INFO.md          # Dataset information & analysis
+        PPO_TRAINING_ANALYSIS.md # Training results analysis
+        PPO_VALIDATION_REPORT.md # Validation results
+        FUNCTION_ORGANIZATION_REVIEW.md  #  Code organization review
+        REFACTORING_COMPLETION_REPORT.md #  Refactoring report
+        CLEANUP_RECOMMENDATIONS.md       #  Cleanup suggestions
+        PROJECT_ORGANIZATION.md  # Organization guide
+        STRUCTURE_ANALYSIS.md    # Architecture analysis
+
+  Interactive Notebooks
+    notebooks/
+        PPO_Testing_and_Debugging.ipynb  # PPO development notebook
+        _setup.ipynb             # Environment setup notebook
+
+  Data & Models
+    data/
+       raw/                     # Original datasets (gitignored)
+       processed/               # Processed data cache
+           mp_data_cache_*.pkl  # Materials Project cache
+    models/                      # Trained model checkpoints
+       ppo_agent*.pth           # PPO policy checkpoints
+    logs/                        # Training logs & visualizations
+        ppo_learning_curves_*.png
+
+  Dashboard (Planned)
+    dash_app/
+        data/                    # Dashboard data files
+
+  Archive
+    archive/
+        legacy_env/              # Legacy environment implementations
+
+  Configuration
+     .gitignore                   # Git ignore rules
+     .github/
+        copilot-instructions.md  # AI assistant instructions
+     requirements.txt             # Python dependencies (if exists)
+     environment.yml              # Conda environment (if exists)
+     activate_env.bat/.ps1        # Environment activation helpers
+     check_env.py                 # Environment validation script
 ```
 
-### 📌 Key Highlights
+### Key Highlights
 
-- **✨ Indicates newly organized/refactored modules** (October 2025)
-- **🎯 Modular Architecture**: Clear separation of concerns
-- **📦 Lightweight CLI**: Scripts are thin wrappers (15 lines average)
-- **🧪 Comprehensive Testing**: 15+ test files with full coverage
-- **📚 Rich Documentation**: 10+ detailed documentation files
+- ** Indicates newly organized/refactored modules** (October 2025)
+- ** Modular Architecture**: Clear separation of concerns
+- ** Lightweight CLI**: Scripts are thin wrappers (15 lines average)
+- ** Comprehensive Testing**: 15+ test files with full coverage
+- ** Rich Documentation**: 10+ detailed documentation files
 
 ## Key Components
 
@@ -406,17 +406,17 @@ The pipeline consists of **10 nodes** with a flexible architecture that allows P
 
 #### Architecture Constraints
 
-- **Fixed Positions**: N0 (start) → N2 (second) → ... → N8 (pre-end) → N9 (end)
+- **Fixed Positions**: N0 (start)  ->  N2 (second)  ->  ...  ->  N8 (pre-end)  ->  N9 (end)
 - **Flexible Middle Nodes**: N1, N3, N4, N5, N6, N7 can be executed in any order (or skipped)
 - **PPO Controlled**: Agent decides which middle nodes to use and in what sequence
 - **Reward Computation**: Triggered at N9 based on final pipeline performance
 
 #### Example Valid Sequences
 
-1. **Minimal**: `N0 → N2 → N8 → N9`
-2. **Standard**: `N0 → N2 → N1 → N6 → N7 → N8 → N9`
-3. **Advanced**: `N0 → N2 → N3 → N4 → N1 → N5 → N6 → N7 → N8 → N9`
-4. **GNN-focused**: `N0 → N2 → N4 → N5 → N7 → N8 → N9`
+1. **Minimal**: `N0  ->  N2  ->  N8  ->  N9`
+2. **Standard**: `N0  ->  N2  ->  N1  ->  N6  ->  N7  ->  N8  ->  N9`
+3. **Advanced**: `N0  ->  N2  ->  N3  ->  N4  ->  N1  ->  N5  ->  N6  ->  N7  ->  N8  ->  N9`
+4. **GNN-focused**: `N0  ->  N2  ->  N4  ->  N5  ->  N7  ->  N8  ->  N9`
 
 ### PPO Enhancements
 
@@ -434,21 +434,21 @@ The pipeline consists of **10 nodes** with a flexible architecture that allows P
 
 ```
 N0 (DataFetch)
-   │
-   ▼
+   
+   
 N2 (FeatureMatrix) ← Fixed sequence start
-   │
-   ▼
-   ┌──────────────────────────────────────────────────────┐
-   │  Flexible Middle Nodes (PPO decides order & usage)   │
-   │  N1 (Impute) | N3 (Cleaning) | N4 (GNN) | N5 (KG)   │
-   │  N6 (FeatureSelection) | N7 (Scaling)                │
-   └──────────────────────────────────────────────────────┘
-   │
-   ▼
+   
+   
+   
+     Flexible Middle Nodes (PPO decides order & usage)   
+     N1 (Impute) | N3 (Cleaning) | N4 (GNN) | N5 (KG)   
+     N6 (FeatureSelection) | N7 (Scaling)                
+   
+   
+   
 N8 (ModelTraining) ← Must execute before termination
-   │
-   ▼
+   
+   
 N9 (End) ← Triggers pipeline evaluation and reward computation
 ```
 
@@ -476,9 +476,9 @@ The PPO algorithm automatically selects:
 
 ---
 
-## 🚀 Installation
+## Installation
 
-### 📋 Prerequisites
+### Prerequisites
 
 | Requirement | Version | Notes |
 |------------|---------|-------|
@@ -487,16 +487,16 @@ The PPO algorithm automatically selects:
 | **Git** | Latest | For cloning repository |
 | **Materials Project API** | - | Free account required |
 
-### 🔧 Step-by-Step Setup
+### Step-by-Step Setup
 
-#### 1️⃣ Clone the Repository
+#### 1⃣ Clone the Repository
 ```bash
 git clone https://github.com/HermanQin9/Summer_Project_MatFormPPO.git
 cd Summer_Project_MatFormPPO
 git checkout 2025-10-11  # Latest stable branch
 ```
 
-#### 2️⃣ Create Python Environment
+#### 2⃣ Create Python Environment
 
 **Option A: Using Conda (Recommended)**
 ```bash
@@ -521,7 +521,7 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-#### 3️⃣ Install Dependencies
+#### 3⃣ Install Dependencies
 ```bash
 # Install required packages
 pip install -r requirements.txt
@@ -540,7 +540,7 @@ pip install -r requirements.txt
 # - matminer >= 0.9.0      # Feature engineering
 ```
 
-#### 4️⃣ Configure Materials Project API
+#### 4⃣ Configure Materials Project API
 
 **Get Your API Key:**
 1. Visit [Materials Project](https://materialsproject.org/api)
@@ -558,7 +558,7 @@ nano config.py  # or use your favorite editor
 API_KEY = "your_api_key_here"  # Replace with your actual key
 ```
 
-#### 5️⃣ Verify Installation
+#### 5⃣ Verify Installation
 ```bash
 # Check environment setup
 python check_env.py
@@ -570,18 +570,18 @@ python scripts/example_usage.py
 python scripts/debug/check_training_mode.py
 ```
 
-### ✅ Installation Success Indicators
+### Installation Success Indicators
 
 You should see:
 ```
-✅ Python 3.11+ detected
-✅ All required packages installed
-✅ Materials Project API key configured
-✅ Test data accessible
-✅ Environment ready for training
+ Python 3.11+ detected
+ All required packages installed
+ Materials Project API key configured
+ Test data accessible
+ Environment ready for training
 ```
 
-### 🐛 Troubleshooting Installation
+### Troubleshooting Installation
 
 <details>
 <summary><b>Issue: API Key Error</b></summary>
@@ -620,7 +620,7 @@ python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
 ```
 </details>
 
-### 🌐 Environment Variables
+### Environment Variables
 
 Optional environment variables for configuration:
 
@@ -638,25 +638,25 @@ export DEBUG=1
 
 ---
 
-## ⚡ Quick Start Guide
+## Getting Started Guide
 
-### 🎯 30-Second Start
+### Quick Start
 
 ```bash
 # 1. Run example pipeline
 python scripts/example_usage.py
 
-# 2. Train PPO agent (quick test)
+# 2. Train PPO agent (quick validation)
 python scripts/train_ppo.py
 
 # 3. Analyze results
 python scripts/analysis/analyze_ppo_results.py
 ```
 
-### 📚 Detailed Workflows
+### Detailed Workflows
 
 <details>
-<summary><b>1️⃣ Basic Material Property Prediction</b></summary>
+<summary><b>1. Basic Material Property Prediction</b></summary>
 
 ```bash
 # Run complete pipeline demonstration
@@ -666,10 +666,10 @@ python scripts/example_usage.py
 python -c "from scripts.example_usage import run_example; run_example()"
 
 # Expected output:
-# ✅ Data fetched: 200 materials
-# ✅ Features engineered: 145 features
-# ✅ Model trained: R² = 0.87
-# ✅ Predictions complete
+#  Data fetched: 200 materials
+#  Features engineered: 145 features
+#  Model trained: R² = 0.87
+#  Predictions complete
 ```
 
 **What This Does:**
@@ -680,14 +680,14 @@ python -c "from scripts.example_usage import run_example; run_example()"
 </details>
 
 <details>
-<summary><b>2️⃣ PPO Reinforcement Learning Training</b></summary>
+<summary><b>2. PPO Reinforcement Learning Training</b></summary>
 
-**Quick Training (200 samples, ~5 minutes):**
+**Quick Training (200 samples, approximately 5 minutes):**
 ```bash
 python scripts/train_ppo.py --episodes 20
 ```
 
-**Production Training (4K dataset, ~30 minutes):**
+**Production Training (4K dataset, approximately 30 minutes):**
 ```powershell
 # Windows
 $env:PIPELINE_TEST = "4k"
@@ -705,17 +705,17 @@ python scripts/train_ppo_safe.py --episodes 15
 
 **Expected Results:**
 ```
-📊 Episode 1/20: Reward = -0.95, Length = 6
-📊 Episode 5/20: Reward = 0.42, Length = 7
-📊 Episode 10/20: Reward = 0.78, Length = 6
-📊 Episode 20/20: Reward = 0.85, Length = 7
-✅ Training complete! Success rate: 85%
-💾 Model saved to: models/ppo_agent_20251011_143052.pth
+ Episode 1/20: Reward = -0.95, Length = 6
+ Episode 5/20: Reward = 0.42, Length = 7
+ Episode 10/20: Reward = 0.78, Length = 6
+ Episode 20/20: Reward = 0.85, Length = 7
+ Training complete! Success rate: 85%
+ Model saved to: models/ppo_agent_20251011_143052.pth
 ```
 </details>
 
 <details>
-<summary><b>3️⃣ Environment Testing & Validation</b></summary>
+<summary><b>3. Environment Testing and Validation</b></summary>
 
 ```bash
 # Test RL environment functionality
@@ -745,7 +745,7 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest tests/ -v
 </details>
 
 <details>
-<summary><b>4️⃣ Analysis & Visualization</b></summary>
+<summary><b>4⃣ Analysis & Visualization</b></summary>
 
 **Analyze Latest Training Run:**
 ```bash
@@ -753,15 +753,15 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest tests/ -v
 python scripts/analysis/analyze_ppo_results.py
 
 # Output:
-# 📊 PPO训练结果分析 / PPO Training Results Analysis
+#  PPO / PPO Training Results Analysis
 # ================================================================
-# 🔖 模型检查点: models/ppo_agent_20251011.pth
-# 📈 总回合数: 40
-# 🎯 平均奖励: 0.623 ± 0.184
-# 🔝 最佳奖励: 0.892
-# ✅ 成功率: 85.0% (34/40)
-# ⏱️ 平均步数: 6.8
-# 📊 可视化图表已保存: logs/ppo_learning_curves_20251011.png
+#  : models/ppo_agent_20251011.pth
+#  : 40
+#  : 0.623 ± 0.184
+#  : 0.892
+#  : 85.0% (34/40)
+# ⏱ : 6.8
+#  : logs/ppo_learning_curves_20251011.png
 ```
 
 **Plot Learning Curves:**
@@ -781,7 +781,7 @@ python scripts/analysis/reward_analysis.py
 </details>
 
 <details>
-<summary><b>5️⃣ Data Management</b></summary>
+<summary><b>5⃣ Data Management</b></summary>
 
 **Generate 4K Dataset:**
 ```bash
@@ -789,12 +789,12 @@ python scripts/analysis/reward_analysis.py
 python scripts/generate_4k_data.py
 
 # Expected output:
-# 🔄 开始生成4K数据集...
-# 📦 Batch 1/40: 100 materials fetched
-# 📦 Batch 2/40: 100 materials fetched
+#  4K...
+#  Batch 1/40: 100 materials fetched
+#  Batch 2/40: 100 materials fetched
 # ...
-# ✅ 数据集生成完成！总计: 4000 材料
-# 💾 保存到: data/processed/mp_data_cache_4k.pkl
+#  : 4000 
+#  : data/processed/mp_data_cache_4k.pkl
 ```
 
 **Fix Incomplete Dataset:**
@@ -808,7 +808,7 @@ python tests/test_4k_data.py
 ```
 </details>
 
-### 🎮 Interactive Usage
+### Interactive Usage
 
 **Python Interactive Session:**
 ```python
@@ -1113,31 +1113,31 @@ For questions or contributions, please open an issue on GitHub.
 
 ---
 
-## 📈 Project Status & Roadmap
+## Project Status and Roadmap
 
-### ✅ Current Status (v2.0 - October 2025)
+### Current Status (v2.0 - October 2025)
 
 | Component | Status | Completion | Notes |
 |-----------|--------|------------|-------|
-| **Core Pipeline** | ✅ Production | 100% | Fully functional with 10-node architecture |
-| **PPO Training** | ✅ Production | 100% | 85% success rate on 4K dataset |
-| **Data Processing** | ✅ Production | 100% | Multi-scale support (200/4K) |
-| **Model Training** | ✅ Production | 100% | RF, XGB, CatBoost, GBR |
-| **Analysis Tools** | ✅ Production | 100% | Comprehensive visualization & metrics |
-| **Testing Suite** | ✅ Production | 100% | 15+ test modules with full coverage |
-| **Documentation** | ✅ Complete | 100% | 10+ detailed docs, API references |
-| **Code Organization** | ✅ Refactored | 100% | Modular, DRY, 81% code reduction |
-| **GNN Integration** | 🚧 Placeholder | 30% | Framework ready, implementation pending |
-| **Knowledge Graph** | 🚧 Placeholder | 30% | API ready, enrichment pending |
-| **Interactive Dashboard** | 🚧 Planned | 20% | UI mockups complete |
+| **Core Pipeline** | Production | 100% | Fully functional with 10-node architecture |
+| **PPO Training** | Production | 100% | 85% success rate on 4K dataset |
+| **Data Processing** | Production | 100% | Multi-scale support (200/4K) |
+| **Model Training** | Production | 100% | RF, XGB, CatBoost, GBR |
+| **Analysis Tools** | Production | 100% | Comprehensive visualization and metrics |
+| **Testing Suite** | Production | 100% | 15+ test modules with full coverage |
+| **Documentation** | Complete | 100% | 10+ detailed docs, API references |
+| **Code Organization** | Refactored | 100% | Modular, DRY, 81% code reduction |
+| **GNN Integration** | Placeholder | 30% | Framework ready, implementation pending |
+| **Knowledge Graph** | Placeholder | 30% | API ready, enrichment pending |
+| **Interactive Dashboard** | Planned | 20% | UI mockups complete |
 
-### 🎯 Completed Milestones
+### Completed Milestones
 
-- ✅ **v1.0 (July 2025)**: Initial 5-node pipeline with basic PPO
-- ✅ **v1.5 (September 2025)**: 10-node flexible architecture, action masking
-- ✅ **v2.0 (October 2025)**: Complete code reorganization, unified analysis framework
+- **v1.0 (July 2025)**: Initial 5-node pipeline with basic PPO
+- **v1.5 (September 2025)**: 10-node flexible architecture, action masking
+- **v2.0 (October 2025)**: Complete code reorganization, unified analysis framework
 
-### 🚀 Upcoming Features (v2.1+)
+### Upcoming Features (v2.1+)
 
 #### Short-term (Next 1-2 Months)
 - [ ] **GNN Processing**: Full implementation of graph neural network feature extraction
@@ -1157,16 +1157,16 @@ For questions or contributions, please open an issue on GitHub.
 - [ ] **Model Zoo**: Pre-trained models for various material properties
 - [ ] **Community Features**: Model sharing and leaderboards
 
-### 🐛 Known Issues & Limitations
+### Known Issues and Limitations
 
 | Issue | Severity | Status | Workaround |
 |-------|----------|--------|------------|
-| Notebook hardcoded paths | Low | 📝 Documented | Manual path update |
-| Windows-specific conda paths in `run.py` | Low | 📝 Documented | Use standard activation |
-| Large dataset memory usage | Medium | 🔄 Monitoring | Batch processing |
-| GNN placeholder functionality | Low | 🚧 Planned | Skip node in pipeline |
+| Notebook hardcoded paths | Low |  Documented | Manual path update |
+| Windows-specific conda paths in `run.py` | Low |  Documented | Use standard activation |
+| Large dataset memory usage | Medium |  Monitoring | Batch processing |
+| GNN placeholder functionality | Low |  Planned | Skip node in pipeline |
 
-### 📊 Performance Metrics History
+### Performance Metrics History
 
 | Version | Success Rate | Processing Speed | Model R² | Dataset Size |
 |---------|-------------|------------------|----------|--------------|
@@ -1177,20 +1177,20 @@ For questions or contributions, please open an issue on GitHub.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions! Here's how you can help:
+We welcome contributions. Here are ways to contribute:
 
-### 🌟 Ways to Contribute
+### Ways to Contribute
 
-1. **🐛 Bug Reports**: Open an issue with detailed reproduction steps
-2. **✨ Feature Requests**: Suggest new features or improvements
-3. **📝 Documentation**: Improve or translate documentation
-4. **🔧 Code Contributions**: Submit pull requests for bug fixes or features
-5. **🧪 Testing**: Add test cases or improve test coverage
-6. **📊 Benchmarking**: Share performance results on different datasets
+1. ** Bug Reports**: Open an issue with detailed reproduction steps
+2. ** Feature Requests**: Suggest new features or improvements
+3. ** Documentation**: Improve or translate documentation
+4. ** Code Contributions**: Submit pull requests for bug fixes or features
+5. ** Testing**: Add test cases or improve test coverage
+6. ** Benchmarking**: Share performance results on different datasets
 
-### 🔧 Development Setup
+### Development Setup
 
 ```bash
 # Fork and clone your fork
@@ -1210,7 +1210,7 @@ git commit -m "feat: add your feature description"
 git push origin feature/your-feature-name
 ```
 
-### 📋 Contribution Guidelines
+### Contribution Guidelines
 
 - Follow PEP 8 style guidelines
 - Add unit tests for new features
@@ -1220,7 +1220,7 @@ git push origin feature/your-feature-name
 
 ---
 
-## 📄 License
+## License
 
 This project is part of a summer research program at [Your Institution].  
 For usage permissions and collaboration inquiries, please contact the author.
@@ -1229,16 +1229,16 @@ For usage permissions and collaboration inquiries, please contact the author.
 
 ---
 
-## 👤 Author & Contact
+## Author and Contact
 
 **Herman Qin**  
 *Summer Research Project 2025*
 
-- 📧 Email: [Your Email]
-- 🔗 GitHub: [@HermanQin9](https://github.com/HermanQin9)
-- 🌐 Repository: [Summer_Project_Clear_Version](https://github.com/HermanQin9/Summer_Project_Clear_Version)
+-  Email: [Your Email]
+-  GitHub: [@HermanQin9](https://github.com/HermanQin9)
+-  Repository: [Summer_Project_Clear_Version](https://github.com/HermanQin9/Summer_Project_Clear_Version)
 
-### 🙏 Acknowledgments
+### Acknowledgments
 
 - **Materials Project**: For providing the materials database and API
 - **matminer**: For materials featurization tools
@@ -1248,7 +1248,7 @@ For usage permissions and collaboration inquiries, please contact the author.
 
 ---
 
-## 📚 Citation
+## Citation
 
 If you use this work in your research, please cite:
 
@@ -1264,7 +1264,7 @@ If you use this work in your research, please cite:
 
 ---
 
-## 🔗 Related Projects & Resources
+## Related Projects and Resources
 
 - [Materials Project](https://materialsproject.org/) - Materials database
 - [matminer](https://hackingmaterials.lbl.gov/matminer/) - Feature engineering
@@ -1276,10 +1276,10 @@ If you use this work in your research, please cite:
 
 <div align="center">
 
-**⭐ Star this repo if you find it useful! ⭐**
+** Star this repo if you find it useful! **
 
 **Last Updated**: October 11, 2025 | **Version**: 2.0.0
 
-Made with ❤️ for Materials Science Research
+Made with  for Materials Science Research
 
 </div>

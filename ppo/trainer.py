@@ -1,6 +1,6 @@
 """
 PPO Training Module for Pipeline Optimization
-PPO强化学习训练模块，用于流水线优化，支持node_action和select_node操作
+PPOnode_actionselect_node
 Includes GAE, minibatching, and KL early stopping
 """
 
@@ -31,7 +31,6 @@ np.random.seed(0)
 # Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 class PPOTrainer:
     def __init__(
@@ -216,7 +215,7 @@ class PPOTrainer:
         return np.concatenate([fp, visited, mask, mcount, mmask_flat], axis=0)
 
     def train(self, num_episodes: int = 100, log_interval: int = 10) -> None:
-        logger.info(f"开始PPO训练，共{num_episodes}轮")
+        logger.info(f"PPO{num_episodes}")
         for episode in range(num_episodes):
             episode_reward, episode_length = self.train_episode()
             self.episode_rewards.append(episode_reward)
@@ -224,7 +223,7 @@ class PPOTrainer:
             if episode % log_interval == 0:
                 avg_reward = float(np.mean(self.episode_rewards[-10:]))
                 avg_length = float(np.mean(self.episode_lengths[-10:]))
-                logger.info(f"回合 {episode}: 平均奖励={avg_reward:.3f}, 平均长度={avg_length:.1f}")
+                logger.info(f" {episode}: ={avg_reward:.3f}, ={avg_length:.1f}")
 
     def save_model(self, path: str) -> None:
         torch.save({
@@ -233,7 +232,7 @@ class PPOTrainer:
             'episode_rewards': self.episode_rewards,
             'episode_lengths': self.episode_lengths,
         }, path)
-        logger.info(f"模型已保存到: {path}")
+        logger.info(f": {path}")
 
     def load_model(self, path: str) -> None:
         checkpoint = torch.load(path)
@@ -241,16 +240,15 @@ class PPOTrainer:
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.episode_rewards = checkpoint.get('episode_rewards', [])
         self.episode_lengths = checkpoint.get('episode_lengths', [])
-        logger.info(f"模型已从 {path} 加载")
-
+        logger.info(f" {path} ")
 
 def main() -> None:
     parser = argparse.ArgumentParser(description='PPO Pipeline Optimization')
-    parser.add_argument('--episodes', type=int, default=100, help='训练回合数')
-    parser.add_argument('--lr', type=float, default=3e-4, help='学习率')
-    parser.add_argument('--hidden_size', type=int, default=64, help='隐藏层大小')
-    parser.add_argument('--steps_per_ep', type=int, default=20, help='每个训练episode包含的固定步数')
-    parser.add_argument('--save_path', type=str, default='models/ppo_pipeline.pth', help='模型保存路径')
+    parser.add_argument('--episodes', type=int, default=100, help='')
+    parser.add_argument('--lr', type=float, default=3e-4, help='')
+    parser.add_argument('--hidden_size', type=int, default=64, help='')
+    parser.add_argument('--steps_per_ep', type=int, default=20, help='episode')
+    parser.add_argument('--save_path', type=str, default='models/ppo_pipeline.pth', help='')
     args = parser.parse_args()
 
     env = PipelineEnv()
@@ -258,7 +256,6 @@ def main() -> None:
     trainer.train(num_episodes=args.episodes)
     os.makedirs(os.path.dirname(args.save_path), exist_ok=True)
     trainer.save_model(args.save_path)
-
 
 if __name__ == '__main__':
     main()
